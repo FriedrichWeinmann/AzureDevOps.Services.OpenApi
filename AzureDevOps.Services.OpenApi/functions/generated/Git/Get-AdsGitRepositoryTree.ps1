@@ -1,0 +1,100 @@
+﻿function Get-AdsGitRepositoryTree {
+<#
+.SYNOPSIS
+    
+
+.DESCRIPTION
+    The Tree endpoint returns the collection of objects underneath the specified tree. Trees are folders in a Git repository.
+
+Repositories have both a name and an identifier. Identifiers are globally unique, but several projects may contain a repository of the same name. You don't need to include the project if you specify a repository by ID. However, if you specify a repository by name, you must also specify the project (by name or ID.
+
+.PARAMETER Format
+    Use "zip". Defaults to the MIME type set in the Accept header.
+
+.PARAMETER ApiVersion
+    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
+
+.PARAMETER Recursive
+    Search recursively. Include trees underneath this tree. Default is false.
+
+.PARAMETER FileName
+    Name to use if a .zip file is returned. Default is the object ID.
+
+.PARAMETER ProjectId
+    Project Id.
+
+.PARAMETER Sha1
+    SHA1 hash of the tree object.
+
+.PARAMETER Project
+    Project ID or project name
+
+.PARAMETER RepositoryId
+    Repository Id.
+
+.PARAMETER Organization
+    The name of the Azure DevOps organization.
+
+.EXAMPLE
+    PS C:\> Get-AdsGitRepositoryTree -ApiVersion $apiversion -Sha1 $sha1 -Project $project -RepositoryId $repositoryid -Organization $organization
+
+    The Tree endpoint returns the collection of objects underneath the specified tree. Trees are folders in a Git repository.
+
+Repositories have both a name and an identifier. Identifiers are globally unique, but several projects may contain a repository of the same name. You don't need to include the project if you specify a repository by ID. However, if you specify a repository by name, you must also specify the project (by name or ID.
+
+.LINK
+    <unknown>
+#>
+    [CmdletBinding(DefaultParameterSetName = 'default')]
+    param (
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [string]
+        $Format,
+
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [string]
+        $ApiVersion,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [boolean]
+        $Recursive,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [string]
+        $FileName,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [string]
+        $ProjectId,
+
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [string]
+        $Sha1,
+
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [string]
+        $Project,
+
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [string]
+        $RepositoryId,
+
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [string]
+        $Organization
+    )
+    process {
+        $__mapping = @{
+            'Format' = '$format'
+            'ApiVersion' = 'api-version'
+            'Recursive' = 'recursive'
+            'FileName' = 'fileName'
+            'ProjectId' = 'projectId'
+        }
+        $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
+        $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('Format','ApiVersion','Recursive','FileName','ProjectId') -Mapping $__mapping
+        $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
+        $__path = 'https://dev.azure.com/{organization}/{project}/_apis/git/repositories/{repositoryId}/trees/{sha1}' -Replace '{sha1}',$Sha1 -Replace '{project}',$Project -Replace '{repositoryId}',$RepositoryId -Replace '{organization}',$Organization
+        Invoke-RestRequest -Path $__path -Method get -Body $__body -Query $__query -Header $__header
+    }
+}
