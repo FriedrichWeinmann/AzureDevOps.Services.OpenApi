@@ -1,31 +1,40 @@
 ﻿# Description
 
-Insert a useful description for the AzureDevOps.Services.OpenApi project here.
+Client Module for the Azure DevOps api.
+This module is mostly auto-generated using AutoRest, which allowed mapping the entire API in reasonable time, but means that some of the commands are missing help and that ... well, that both command naming and PowerShell usability (such as Pipeline support) could be improved upon.
 
-Remember, it's the first thing a visitor will see.
+> Some very few API endpoints are still missing and some few are only partially available, as this is a work in progress.
 
-# Project Setup Instructions
-## Working with the layout
+## Connecting
 
-- Don't touch the psm1 file
-- Place functions you export in `functions/` (can have subfolders)
-- Place private/internal functions invisible to the user in `internal/functions` (can have subfolders)
-- Don't add code directly to the `postimport.ps1` or `preimport.ps1`.
-  Those files are designed to import other files only.
-- When adding files & folders, make sure they are covered by either `postimport.ps1` or `preimport.ps1`.
-  This adds them to both the import and the build sequence.
+To establish a connection use `Connect-AdsService`:
 
-## Setting up CI/CD
+```powershell
+Connect-AdsService -Credential $cred
+```
 
-> To create a PR validation pipeline, set up tasks like this:
+Where `$cred` contains a credential object with the user's UPN / mail and a Personal Access Token (PAT) as Password.
 
-- Install Prerequisites (PowerShell Task; VSTS-Prerequisites.ps1)
-- Validate (PowerShell Task; VSTS-Validate.ps1)
-- Publish Test Results (Publish Test Results; NUnit format; Run no matter what)
+> Theoretically, Azure AD authentication should work, using the ClientID and TenantID parameters instead, but there's some backend trouble which I'm still investigating.
 
-> To create a build/publish pipeline, set up tasks like this:
+## Installing
 
-- Install Prerequisites (PowerShell Task; VSTS-Prerequisites.ps1)
-- Validate (PowerShell Task; VSTS-Validate.ps1)
-- Build (PowerShell Task; VSTS-Build.ps1)
-- Publish Test Results (Publish Test Results; NUnit format; Run no matter what)
+```powershell
+Install-Module AzureDevOps.Services.OpenApi -Scope CurrentUser
+```
+
+## Using
+
+> List all projects in your organization
+
+```powershell
+Get-AdsProject -Organization $orgName -ApiVersion 6.0
+```
+
+> List all PowerShell script files
+
+```powershell
+Get-AdsRepositoryFile -Organization $orgName -IncludeContent -Name *.ps1,*.psm1
+```
+
+This will search through all branches in all repositories in all projects in the specified organization and return all .ps1 and .psm1 files, including the actual file-content.
