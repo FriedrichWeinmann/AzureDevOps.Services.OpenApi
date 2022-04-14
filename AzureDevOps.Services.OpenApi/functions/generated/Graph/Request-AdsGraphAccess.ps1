@@ -1,4 +1,4 @@
-﻿function Set-AdsGraphRequestacces {
+﻿function Request-AdsGraphAccess {
 <#
 .SYNOPSIS
     
@@ -13,14 +13,14 @@
     The name of the Azure DevOps organization.
 
 .EXAMPLE
-    PS C:\> Set-AdsGraphRequestacces -ApiVersion $apiversion -Organization $organization
+    PS C:\> Request-AdsGraphAccess -ApiVersion $apiversion -Organization $organization
 
     <insert description here>
 
 .LINK
-    <unknown>
+    https://docs.microsoft.com/en-us/rest/api/azure/devops/graph/request-access/request-access?view=azure-devops-rest-6.0
 #>
-	[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '')]
     [CmdletBinding(DefaultParameterSetName = 'default')]
     param (
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]

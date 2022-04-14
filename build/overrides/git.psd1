@@ -109,5 +109,6 @@
 				Name = 'VersionOptions'
 			}
 		}
+		PssaRulesIgnored = @('PSUseSingularNouns')
 	}
 }

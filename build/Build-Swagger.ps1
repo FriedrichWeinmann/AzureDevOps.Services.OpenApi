@@ -64,7 +64,11 @@ $commandNames = foreach ($document in Get-ChildItem -Path $swaggerRoot -Filter *
 	foreach ($command in $commands) {
 		$command.EndpointUrl = $baseUri, $command.EndpointUrl -join "/"
 		$command.Name = Convert-Name -Name $command.Name -Component $name -Data $renameData
+		if ($command.Name -like "*{*") {
+			Write-Warning "Badly formed command, skipping for now: $($command.Name) ($($command.EndpointUrl))"
+		}
 	}
+	$commands = $commands | Where-Object Name -notlike "*{*"
 	$commands | Export-ARCommand -Path $exportPath
 	$commands.Name
 }

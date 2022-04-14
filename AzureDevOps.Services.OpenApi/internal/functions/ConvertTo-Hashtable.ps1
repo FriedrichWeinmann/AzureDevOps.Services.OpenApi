@@ -25,6 +25,7 @@
 		Converts the $PSBoundParameters system-variable into a regular hashtable, discarding all entries but Name, Description and ID.
 		"Name" will be renamed to be lowercase if specified, "ID" will be renamed to "objectId" if specified.
 #>
+	[OutputType([Hashtable])]
 	[CmdletBinding()]
 	param (
 		[AllowEmptyCollection()]

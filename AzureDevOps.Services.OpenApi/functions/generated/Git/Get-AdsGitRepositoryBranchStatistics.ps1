@@ -35,6 +35,7 @@
 .LINK
     <unknown>
 #>
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseSingularNouns', '')]
     [CmdletBinding(DefaultParameterSetName = 'default')]
     param (
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
