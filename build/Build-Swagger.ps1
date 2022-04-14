@@ -70,7 +70,7 @@ $commandNames = foreach ($document in Get-ChildItem -Path $swaggerRoot -Filter *
 	}
 	$commands = $commands | Where-Object Name -notlike "*{*"
 	$commands | Export-ARCommand -Path $exportPath
-	$commands.Name
+	$commands.Name | Sort-Object -Unique
 }
 
 # Update Module Manifest
