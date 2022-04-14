@@ -6,22 +6,22 @@
 .DESCRIPTION
     
 
-.PARAMETER ApiVersion
-    Version of the API to use.  This should be set to '6.1-preview.1' to use this version of the api.
+.PARAMETER Organization
+    The name of the Azure DevOps organization.
 
 .PARAMETER Type
     Currently ApplicationInsights is the only available plugin type.
 
-.PARAMETER Organization
-    The name of the Azure DevOps organization.
+.PARAMETER ApiVersion
+    Version of the API to use.  This should be set to '6.1-preview.1' to use this version of the api.
 
 .EXAMPLE
-    PS C:\> Get-AdsCltApmPlugin -ApiVersion $apiversion -Organization $organization
+    PS C:\> Get-AdsCltApmPlugin -Organization $organization -Type $type -ApiVersion $apiversion
 
     <insert description here>
 
 .EXAMPLE
-    PS C:\> Get-AdsCltApmPlugin -ApiVersion $apiversion -Type $type -Organization $organization
+    PS C:\> Get-AdsCltApmPlugin -Organization $organization -ApiVersion $apiversion
 
     <insert description here>
 
@@ -33,7 +33,7 @@
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Plugins_Get')]
         [string]
-        $ApiVersion,
+        $Organization,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Plugins_Get')]
         [string]
@@ -42,7 +42,7 @@
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Plugins_Get')]
         [string]
-        $Organization
+        $ApiVersion
     )
     process {
         $__mapping = @{
@@ -53,6 +53,7 @@
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__path = 'https://vsclt.dev.azure.com/{organization}/_apis/clt/apm/plugins' -Replace '{organization}',$Organization
         if ($Type) { $__path += "/$Type" }
+
         Invoke-RestRequest -Path $__path -Method get -Body $__body -Query $__query -Header $__header
     }
 }

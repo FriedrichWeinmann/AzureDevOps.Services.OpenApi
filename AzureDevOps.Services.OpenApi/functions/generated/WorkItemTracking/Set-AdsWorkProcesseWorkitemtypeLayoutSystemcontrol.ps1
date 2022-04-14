@@ -6,38 +6,35 @@
 .DESCRIPTION
     Updates/adds a system control on the work item form.
 
-.PARAMETER ControlId
-    The ID of the control.
-
-.PARAMETER ProcessId
-    The ID of the process.
+.PARAMETER Organization
+    The name of the Azure DevOps organization.
 
 .PARAMETER ApiVersion
     Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
 
+.PARAMETER ProcessId
+    The ID of the process.
+
 .PARAMETER WitRefName
     The reference name of the work item type.
 
-.PARAMETER Organization
-    The name of the Azure DevOps organization.
+.PARAMETER ControlId
+    The ID of the control.
 
 .EXAMPLE
-    PS C:\> Set-AdsWorkProcesseWorkitemtypeLayoutSystemcontrol -ControlId $controlid -ProcessId $processid -ApiVersion $apiversion -WitRefName $witrefname -Organization $organization
+    PS C:\> Set-AdsWorkProcesseWorkitemtypeLayoutSystemcontrol -Organization $organization -ApiVersion $apiversion -ProcessId $processid -WitRefName $witrefname -ControlId $controlid
 
     Updates/adds a system control on the work item form.
 
 .LINK
     <unknown>
 #>
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     [CmdletBinding(DefaultParameterSetName = 'default')]
     param (
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $ControlId,
-
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [string]
-        $ProcessId,
+        $Organization,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
@@ -45,11 +42,15 @@
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
+        $ProcessId,
+
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [string]
         $WitRefName,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Organization
+        $ControlId
     )
     process {
         $__mapping = @{
@@ -58,7 +59,8 @@
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ApiVersion') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__path = 'https://dev.azure.com/{organization}/_apis/work/processes/{processId}/workItemTypes/{witRefName}/layout/systemcontrols/{controlId}' -Replace '{controlId}',$ControlId -Replace '{processId}',$ProcessId -Replace '{witRefName}',$WitRefName -Replace '{organization}',$Organization
+        $__path = 'https://dev.azure.com/{organization}/_apis/work/processes/{processId}/workItemTypes/{witRefName}/layout/systemcontrols/{controlId}' -Replace '{organization}',$Organization -Replace '{processId}',$ProcessId -Replace '{witRefName}',$WitRefName -Replace '{controlId}',$ControlId
+
         Invoke-RestRequest -Path $__path -Method patch -Body $__body -Query $__query -Header $__header
     }
 }

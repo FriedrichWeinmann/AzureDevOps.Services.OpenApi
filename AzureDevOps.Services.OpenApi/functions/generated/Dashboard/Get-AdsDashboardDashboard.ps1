@@ -6,28 +6,28 @@
 .DESCRIPTION
     Get a list of dashboards under a project.
 
-.PARAMETER ApiVersion
-    Version of the API to use.  This should be set to '7.1-preview.3' to use this version of the api.
-
-.PARAMETER DashboardId
-    
-
 .PARAMETER Organization
     The name of the Azure DevOps organization.
 
 .PARAMETER Team
     Team ID or team name
 
+.PARAMETER DashboardId
+    
+
 .PARAMETER Project
     Project ID or project name
 
+.PARAMETER ApiVersion
+    Version of the API to use.  This should be set to '7.1-preview.3' to use this version of the api.
+
 .EXAMPLE
-    PS C:\> Get-AdsDashboardDashboard -ApiVersion $apiversion -DashboardId $dashboardid -Organization $organization -Team $team -Project $project
+    PS C:\> Get-AdsDashboardDashboard -Organization $organization -Team $team -DashboardId $dashboardid -Project $project -ApiVersion $apiversion
 
     Get a dashboard by its ID.
 
 .EXAMPLE
-    PS C:\> Get-AdsDashboardDashboard -ApiVersion $apiversion -Organization $organization -Team $team -Project $project
+    PS C:\> Get-AdsDashboardDashboard -Organization $organization -Team $team -Project $project -ApiVersion $apiversion
 
     Get a list of dashboards under a project.
 
@@ -39,7 +39,12 @@
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Dashboards_Get')]
         [string]
-        $ApiVersion,
+        $Organization,
+
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Dashboards_Get')]
+        [string]
+        $Team,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Dashboards_Get')]
         [string]
@@ -48,17 +53,12 @@
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Dashboards_Get')]
         [string]
-        $Organization,
+        $Project,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Dashboards_Get')]
         [string]
-        $Team,
-
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Dashboards_Get')]
-        [string]
-        $Project
+        $ApiVersion
     )
     process {
         $__mapping = @{
@@ -69,6 +69,7 @@
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__path = 'https://dev.azure.com/{organization}/{project}/{team}/_apis/dashboard/dashboards' -Replace '{organization}',$Organization -Replace '{team}',$Team -Replace '{project}',$Project
         if ($DashboardId) { $__path += "/$DashboardId" }
+
         Invoke-RestRequest -Path $__path -Method get -Body $__body -Query $__query -Header $__header
     }
 }

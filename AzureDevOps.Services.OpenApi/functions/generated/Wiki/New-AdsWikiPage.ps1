@@ -6,46 +6,56 @@
 .DESCRIPTION
     Creates or edits a wiki page.
 
+.PARAMETER Version
+    Version of the page on which the change is to be made. Mandatory for `Edit` scenario. To be populated in the If-Match header of the request.
+
 .PARAMETER Path
     Wiki page path.
 
 .PARAMETER Comment
     Comment to be associated with the page operation.
 
-.PARAMETER Version
-    Version of the page on which the change is to be made. Mandatory for `Edit` scenario. To be populated in the If-Match header of the request.
-
-.PARAMETER VersionOptions
-    Version options - Specify additional modifiers to version (e.g Previous)
+.PARAMETER WikiIdentifier
+    Wiki ID or wiki name.
 
 .PARAMETER VersionType
     Version type (branch, tag, or commit). Determines how Id is interpreted
 
-.PARAMETER FilterVersion
-    Version string identifier (name of tag/branch, SHA1 of commit)
-
-.PARAMETER ApiVersion
-    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
-
 .PARAMETER Project
     Project ID or project name
-
-.PARAMETER WikiIdentifier
-    Wiki ID or wiki name.
 
 .PARAMETER Organization
     The name of the Azure DevOps organization.
 
+.PARAMETER VersionOptions
+    Version options - Specify additional modifiers to version (e.g Previous)
+
+.PARAMETER ApiVersion
+    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
+
+.PARAMETER FilterVersion
+    Version string identifier (name of tag/branch, SHA1 of commit)
+
 .EXAMPLE
-    PS C:\> New-AdsWikiPage -Path $path -Version $version -ApiVersion $apiversion -Project $project -WikiIdentifier $wikiidentifier -Organization $organization
+    PS C:\> New-AdsWikiPage -Version $version
+
+    <insert description here>
+
+.EXAMPLE
+    PS C:\> New-AdsWikiPage -Path $path -WikiIdentifier $wikiidentifier -Project $project -Organization $organization -ApiVersion $apiversion
 
     Creates or edits a wiki page.
 
 .LINK
     <unknown>
 #>
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     [CmdletBinding(DefaultParameterSetName = 'default')]
     param (
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Wikis_Get')]
+        [string]
+        $Version,
+
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
         $Path,
@@ -56,23 +66,11 @@
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Version,
-
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [string]
-        $VersionOptions,
+        $WikiIdentifier,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
         $VersionType,
-
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [string]
-        $FilterVersion,
-
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [string]
-        $ApiVersion,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
@@ -80,26 +78,35 @@
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $WikiIdentifier,
+        $Organization,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [string]
+        $VersionOptions,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Organization
+        $ApiVersion,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [string]
+        $FilterVersion
     )
     process {
         $__mapping = @{
+            'Version' = 'Version'
             'Path' = 'path'
             'Comment' = 'comment'
-            'Version' = 'Version'
-            'VersionOptions' = 'versionDescriptor.versionOptions'
             'VersionType' = 'versionDescriptor.versionType'
-            'FilterVersion' = 'versionDescriptor.version'
+            'VersionOptions' = 'versionDescriptor.versionOptions'
             'ApiVersion' = 'api-version'
+            'FilterVersion' = 'versionDescriptor.version'
         }
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('Path','Comment','VersionOptions','VersionType','FilterVersion','ApiVersion') -Mapping $__mapping
+        $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('Path','Comment','VersionType','VersionOptions','ApiVersion','FilterVersion') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @('Version') -Mapping $__mapping
-        $__path = 'https://dev.azure.com/{organization}/{project}/_apis/wiki/wikis/{wikiIdentifier}/pages' -Replace '{project}',$Project -Replace '{wikiIdentifier}',$WikiIdentifier -Replace '{organization}',$Organization
+        $__path = 'https://dev.azure.com/{organization}/{project}/_apis/wiki/wikis/{wikiIdentifier}/pages' -Replace '{wikiIdentifier}',$WikiIdentifier -Replace '{project}',$Project -Replace '{organization}',$Organization
+
         Invoke-RestRequest -Path $__path -Method put -Body $__body -Query $__query -Header $__header
     }
 }

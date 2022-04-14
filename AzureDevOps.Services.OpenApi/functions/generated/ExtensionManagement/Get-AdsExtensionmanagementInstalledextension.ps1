@@ -6,8 +6,8 @@
 .DESCRIPTION
     List the installed extensions in the account / project collection.
 
-.PARAMETER IncludeDisabledExtensions
-    If true (the default), include disabled extensions in the results.
+.PARAMETER AssetTypes
+    Determines which files are returned in the files array.  Provide the wildcard '*' to return all files, or a colon separated list to retrieve files with specific asset types.
 
 .PARAMETER IncludeInstallationIssues
     
@@ -15,17 +15,17 @@
 .PARAMETER IncludeErrors
     If true, include installed extensions with errors.
 
-.PARAMETER AssetTypes
-    Determines which files are returned in the files array.  Provide the wildcard '*' to return all files, or a colon separated list to retrieve files with specific asset types.
+.PARAMETER Organization
+    The name of the Azure DevOps organization.
 
 .PARAMETER ApiVersion
     Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
 
-.PARAMETER Organization
-    The name of the Azure DevOps organization.
+.PARAMETER IncludeDisabledExtensions
+    If true (the default), include disabled extensions in the results.
 
 .EXAMPLE
-    PS C:\> Get-AdsExtensionmanagementInstalledextension -ApiVersion $apiversion -Organization $organization
+    PS C:\> Get-AdsExtensionmanagementInstalledextension -Organization $organization -ApiVersion $apiversion
 
     List the installed extensions in the account / project collection.
 
@@ -35,8 +35,8 @@
     [CmdletBinding(DefaultParameterSetName = 'default')]
     param (
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [boolean]
-        $IncludeDisabledExtensions,
+        [string]
+        $AssetTypes,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [boolean]
@@ -46,30 +46,31 @@
         [boolean]
         $IncludeErrors,
 
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $AssetTypes,
+        $Organization,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
         $ApiVersion,
 
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [string]
-        $Organization
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [boolean]
+        $IncludeDisabledExtensions
     )
     process {
         $__mapping = @{
-            'IncludeDisabledExtensions' = 'includeDisabledExtensions'
+            'AssetTypes' = 'assetTypes'
             'IncludeInstallationIssues' = 'includeInstallationIssues'
             'IncludeErrors' = 'includeErrors'
-            'AssetTypes' = 'assetTypes'
             'ApiVersion' = 'api-version'
+            'IncludeDisabledExtensions' = 'includeDisabledExtensions'
         }
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('IncludeDisabledExtensions','IncludeInstallationIssues','IncludeErrors','AssetTypes','ApiVersion') -Mapping $__mapping
+        $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('AssetTypes','IncludeInstallationIssues','IncludeErrors','ApiVersion','IncludeDisabledExtensions') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__path = 'https://extmgmt.dev.azure.com/{organization}/_apis/extensionmanagement/installedextensions' -Replace '{organization}',$Organization
+
         Invoke-RestRequest -Path $__path -Method get -Body $__body -Query $__query -Header $__header
     }
 }

@@ -6,17 +6,17 @@
 .DESCRIPTION
     
 
-.PARAMETER ApiVersion
-    Version of the API to use.  This should be set to '6.1-preview.1' to use this version of the api.
+.PARAMETER Organization
+    The name of the Azure DevOps organization.
 
 .PARAMETER TestRunId
     Id of the test run
 
-.PARAMETER Organization
-    The name of the Azure DevOps organization.
+.PARAMETER ApiVersion
+    Version of the API to use.  This should be set to '6.1-preview.1' to use this version of the api.
 
 .EXAMPLE
-    PS C:\> Get-AdsCltTestrunMessage -ApiVersion $apiversion -TestRunId $testrunid -Organization $organization
+    PS C:\> Get-AdsCltTestrunMessage -Organization $organization -TestRunId $testrunid -ApiVersion $apiversion
 
     <insert description here>
 
@@ -27,7 +27,7 @@
     param (
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $ApiVersion,
+        $Organization,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
@@ -35,7 +35,7 @@
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Organization
+        $ApiVersion
     )
     process {
         $__mapping = @{
@@ -44,7 +44,8 @@
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ApiVersion') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__path = 'https://vsclt.dev.azure.com/{organization}/_apis/clt/testRuns/{testRunId}/messages' -Replace '{testRunId}',$TestRunId -Replace '{organization}',$Organization
+        $__path = 'https://vsclt.dev.azure.com/{organization}/_apis/clt/testRuns/{testRunId}/messages' -Replace '{organization}',$Organization -Replace '{testRunId}',$TestRunId
+
         Invoke-RestRequest -Path $__path -Method get -Body $__body -Query $__query -Header $__header
     }
 }

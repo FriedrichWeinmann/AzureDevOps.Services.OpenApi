@@ -6,20 +6,20 @@
 .DESCRIPTION
     Get clone information.
 
-.PARAMETER ApiVersion
-    Version of the API to use.  This should be set to '7.1-preview.2' to use this version of the api.
+.PARAMETER Organization
+    The name of the Azure DevOps organization.
 
 .PARAMETER CloneOperationId
     Operation ID returned when we queue a clone operation
 
-.PARAMETER Organization
-    The name of the Azure DevOps organization.
-
 .PARAMETER Project
     Project ID or project name
 
+.PARAMETER ApiVersion
+    Version of the API to use.  This should be set to '7.1-preview.2' to use this version of the api.
+
 .EXAMPLE
-    PS C:\> Get-AdsTestplanTestcaseClonetestcaseoperation -ApiVersion $apiversion -CloneOperationId $cloneoperationid -Organization $organization -Project $project
+    PS C:\> Get-AdsTestplanTestcaseClonetestcaseoperation -Organization $organization -CloneOperationId $cloneoperationid -Project $project -ApiVersion $apiversion
 
     Get clone information.
 
@@ -30,7 +30,7 @@
     param (
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $ApiVersion,
+        $Organization,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
@@ -38,11 +38,11 @@
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Organization,
+        $Project,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Project
+        $ApiVersion
     )
     process {
         $__mapping = @{
@@ -51,7 +51,8 @@
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ApiVersion') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__path = 'https://dev.azure.com/{organization}/{project}/_apis/testplan/TestCases/CloneTestCaseOperation/{cloneOperationId}' -Replace '{cloneOperationId}',$CloneOperationId -Replace '{organization}',$Organization -Replace '{project}',$Project
+        $__path = 'https://dev.azure.com/{organization}/{project}/_apis/testplan/TestCases/CloneTestCaseOperation/{cloneOperationId}' -Replace '{organization}',$Organization -Replace '{cloneOperationId}',$CloneOperationId -Replace '{project}',$Project
+
         Invoke-RestRequest -Path $__path -Method get -Body $__body -Query $__query -Header $__header
     }
 }

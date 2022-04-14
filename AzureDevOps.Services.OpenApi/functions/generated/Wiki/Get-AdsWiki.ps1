@@ -6,9 +6,6 @@
 .DESCRIPTION
     Gets all wikis in a project or collection.
 
-.PARAMETER ApiVersion
-    Version of the API to use.  This should be set to '7.1-preview.2' to use this version of the api.
-
 .PARAMETER Organization
     The name of the Azure DevOps organization.
 
@@ -18,13 +15,16 @@
 .PARAMETER Project
     Project ID or project name
 
+.PARAMETER ApiVersion
+    Version of the API to use.  This should be set to '7.1-preview.2' to use this version of the api.
+
 .EXAMPLE
-    PS C:\> Get-AdsWiki -ApiVersion $apiversion -Organization $organization -WikiIdentifier $wikiidentifier -Project $project
+    PS C:\> Get-AdsWiki -Organization $organization -WikiIdentifier $wikiidentifier -Project $project -ApiVersion $apiversion
 
     Gets the wiki corresponding to the wiki ID or wiki name provided.
 
 .EXAMPLE
-    PS C:\> Get-AdsWiki -ApiVersion $apiversion -Organization $organization -Project $project
+    PS C:\> Get-AdsWiki -Organization $organization -Project $project -ApiVersion $apiversion
 
     Gets all wikis in a project or collection.
 
@@ -33,11 +33,6 @@
 #>
     [CmdletBinding(DefaultParameterSetName = 'default')]
     param (
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Wikis_Get')]
-        [string]
-        $ApiVersion,
-
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Wikis_Get')]
         [string]
@@ -50,7 +45,12 @@
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Wikis_Get')]
         [string]
-        $Project
+        $Project,
+
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Wikis_Get')]
+        [string]
+        $ApiVersion
     )
     process {
         $__mapping = @{
@@ -61,6 +61,7 @@
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__path = 'https://dev.azure.com/{organization}/{project}/_apis/wiki/wikis' -Replace '{organization}',$Organization -Replace '{project}',$Project
         if ($WikiIdentifier) { $__path += "/$WikiIdentifier" }
+
         Invoke-RestRequest -Path $__path -Method get -Body $__body -Query $__query -Header $__header
     }
 }

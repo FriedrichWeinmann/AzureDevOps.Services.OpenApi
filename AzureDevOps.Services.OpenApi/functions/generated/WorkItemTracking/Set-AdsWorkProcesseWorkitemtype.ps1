@@ -4,33 +4,31 @@
     
 
 .DESCRIPTION
-    Updates a work item type of the process.
-
-.PARAMETER ApiVersion
-    Version of the API to use.  This should be set to '7.1-preview.2' to use this version of the api.
-
-.PARAMETER ProcessId
-    The ID of the process
-
-.PARAMETER WitRefName
-    The reference name of the work item type
+    Creates a work item type in the process.
 
 .PARAMETER Organization
     The name of the Azure DevOps organization.
 
-.EXAMPLE
-    PS C:\> Set-AdsWorkProcesseWorkitemtype -ApiVersion $apiversion -ProcessId $processid -WitRefName $witrefname -Organization $organization
+.PARAMETER ProcessId
+    The ID of the process on which to create work item type.
 
-    Updates a work item type of the process.
+.PARAMETER ApiVersion
+    Version of the API to use.  This should be set to '7.1-preview.2' to use this version of the api.
+
+.EXAMPLE
+    PS C:\> Set-AdsWorkProcesseWorkitemtype -Organization $organization -ProcessId $processid -ApiVersion $apiversion
+
+    Creates a work item type in the process.
 
 .LINK
     <unknown>
 #>
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     [CmdletBinding(DefaultParameterSetName = 'default')]
     param (
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $ApiVersion,
+        $Organization,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
@@ -38,11 +36,7 @@
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $WitRefName,
-
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [string]
-        $Organization
+        $ApiVersion
     )
     process {
         $__mapping = @{
@@ -51,7 +45,8 @@
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ApiVersion') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__path = 'https://dev.azure.com/{organization}/_apis/work/processes/{processId}/workitemtypes/{witRefName}' -Replace '{processId}',$ProcessId -Replace '{witRefName}',$WitRefName -Replace '{organization}',$Organization
-        Invoke-RestRequest -Path $__path -Method patch -Body $__body -Query $__query -Header $__header
+        $__path = 'https://dev.azure.com/{organization}/_apis/work/processes/{processId}/workitemtypes' -Replace '{organization}',$Organization -Replace '{processId}',$ProcessId
+
+        Invoke-RestRequest -Path $__path -Method post -Body $__body -Query $__query -Header $__header
     }
 }

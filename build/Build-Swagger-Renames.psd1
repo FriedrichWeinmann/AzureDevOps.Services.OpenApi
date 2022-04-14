@@ -12,6 +12,9 @@
 		Npm = @{
 			'@{Packagescope}' = ''
 		}
+		MemberEntitlementManagement = @{
+			'entitlement' = 'Entitlement'
+		}
 	}
 	individual = @{
 

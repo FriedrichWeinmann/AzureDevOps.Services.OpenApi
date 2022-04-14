@@ -6,8 +6,8 @@
 .DESCRIPTION
     Returns a list of all behaviors in the process.
 
-.PARAMETER ApiVersion
-    Version of the API to use.  This should be set to '4.1-preview.1' to use this version of the api.
+.PARAMETER Organization
+    The name of the Azure DevOps organization.
 
 .PARAMETER ProcessId
     The ID of the process
@@ -15,16 +15,16 @@
 .PARAMETER BehaviorId
     The ID of the behavior
 
-.PARAMETER Organization
-    The name of the Azure DevOps organization.
+.PARAMETER ApiVersion
+    Version of the API to use.  This should be set to '4.1-preview.1' to use this version of the api.
 
 .EXAMPLE
-    PS C:\> Get-AdsWorkProcessdefinitionBehavior -ApiVersion $apiversion -ProcessId $processid -BehaviorId $behaviorid -Organization $organization
+    PS C:\> Get-AdsWorkProcessdefinitionBehavior -Organization $organization -ProcessId $processid -BehaviorId $behaviorid -ApiVersion $apiversion
 
     Returns a single behavior in the process.
 
 .EXAMPLE
-    PS C:\> Get-AdsWorkProcessdefinitionBehavior -ApiVersion $apiversion -ProcessId $processid -Organization $organization
+    PS C:\> Get-AdsWorkProcessdefinitionBehavior -Organization $organization -ProcessId $processid -ApiVersion $apiversion
 
     Returns a list of all behaviors in the process.
 
@@ -36,7 +36,7 @@
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Get')]
         [string]
-        $ApiVersion,
+        $Organization,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Get')]
@@ -50,7 +50,7 @@
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Get')]
         [string]
-        $Organization
+        $ApiVersion
     )
     process {
         $__mapping = @{
@@ -59,8 +59,9 @@
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ApiVersion') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__path = 'https://dev.azure.com/{organization}/_apis/work/processdefinitions/{processId}/behaviors' -Replace '{processId}',$ProcessId -Replace '{organization}',$Organization
+        $__path = 'https://dev.azure.com/{organization}/_apis/work/processdefinitions/{processId}/behaviors' -Replace '{organization}',$Organization -Replace '{processId}',$ProcessId
         if ($BehaviorId) { $__path += "/$BehaviorId" }
+
         Invoke-RestRequest -Path $__path -Method get -Body $__body -Query $__query -Header $__header
     }
 }

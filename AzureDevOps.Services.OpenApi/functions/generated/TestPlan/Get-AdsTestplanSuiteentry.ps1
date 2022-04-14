@@ -6,23 +6,23 @@
 .DESCRIPTION
     Get a list of test suite entries in the test suite.
 
+.PARAMETER Organization
+    The name of the Azure DevOps organization.
+
 .PARAMETER ApiVersion
     Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
-
-.PARAMETER SuiteId
-    Id of the parent suite.
 
 .PARAMETER SuiteEntryType
     
 
-.PARAMETER Organization
-    The name of the Azure DevOps organization.
-
 .PARAMETER Project
     Project ID or project name
 
+.PARAMETER SuiteId
+    Id of the parent suite.
+
 .EXAMPLE
-    PS C:\> Get-AdsTestplanSuiteentry -ApiVersion $apiversion -SuiteId $suiteid -Organization $organization -Project $project
+    PS C:\> Get-AdsTestplanSuiteentry -Organization $organization -ApiVersion $apiversion -Project $project -SuiteId $suiteid
 
     Get a list of test suite entries in the test suite.
 
@@ -33,11 +33,11 @@
     param (
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $ApiVersion,
+        $Organization,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $SuiteId,
+        $ApiVersion,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
@@ -45,11 +45,11 @@
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Organization,
+        $Project,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Project
+        $SuiteId
     )
     process {
         $__mapping = @{
@@ -59,7 +59,8 @@
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ApiVersion','SuiteEntryType') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__path = 'https://dev.azure.com/{organization}/{project}/_apis/testplan/suiteentry/{suiteId}' -Replace '{suiteId}',$SuiteId -Replace '{organization}',$Organization -Replace '{project}',$Project
+        $__path = 'https://dev.azure.com/{organization}/{project}/_apis/testplan/suiteentry/{suiteId}' -Replace '{organization}',$Organization -Replace '{project}',$Project -Replace '{suiteId}',$SuiteId
+
         Invoke-RestRequest -Path $__path -Method get -Body $__body -Query $__query -Header $__header
     }
 }

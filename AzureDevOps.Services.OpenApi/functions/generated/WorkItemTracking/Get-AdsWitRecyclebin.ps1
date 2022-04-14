@@ -6,27 +6,27 @@
 .DESCRIPTION
     Gets a list of the IDs and the URLs of the deleted the work items in the Recycle Bin.
 
-.PARAMETER ApiVersion
-    Version of the API to use.  This should be set to '7.1-preview.2' to use this version of the api.
+.PARAMETER Organization
+    The name of the Azure DevOps organization.
 
 .PARAMETER Id
     ID of the work item to be returned
 
-.PARAMETER Organization
-    The name of the Azure DevOps organization.
-
 .PARAMETER Project
     Project ID or project name
 
-.EXAMPLE
-    PS C:\> Get-AdsWitRecyclebin -ApiVersion $apiversion -Organization $organization -Project $project
-
-    Gets a list of the IDs and the URLs of the deleted the work items in the Recycle Bin.
+.PARAMETER ApiVersion
+    Version of the API to use.  This should be set to '7.1-preview.2' to use this version of the api.
 
 .EXAMPLE
-    PS C:\> Get-AdsWitRecyclebin -ApiVersion $apiversion -Id $id -Organization $organization -Project $project
+    PS C:\> Get-AdsWitRecyclebin -Organization $organization -Id $id -Project $project -ApiVersion $apiversion
 
     Gets a deleted work item from Recycle Bin.
+
+.EXAMPLE
+    PS C:\> Get-AdsWitRecyclebin -Organization $organization -Project $project -ApiVersion $apiversion
+
+    Gets a list of the IDs and the URLs of the deleted the work items in the Recycle Bin.
 
 .LINK
     <unknown>
@@ -36,7 +36,7 @@
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Recyclebin_Get')]
         [string]
-        $ApiVersion,
+        $Organization,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Recyclebin_Get')]
         [string]
@@ -45,12 +45,12 @@
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Recyclebin_Get')]
         [string]
-        $Organization,
+        $Project,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Recyclebin_Get')]
         [string]
-        $Project
+        $ApiVersion
     )
     process {
         $__mapping = @{
@@ -61,6 +61,7 @@
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__path = 'https://dev.azure.com/{organization}/{project}/_apis/wit/recyclebin' -Replace '{organization}',$Organization -Replace '{project}',$Project
         if ($Id) { $__path += "/$Id" }
+
         Invoke-RestRequest -Path $__path -Method get -Body $__body -Query $__query -Header $__header
     }
 }

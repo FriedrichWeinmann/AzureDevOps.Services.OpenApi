@@ -4,31 +4,35 @@
     
 
 .DESCRIPTION
-    Creates a control in a group.
+    Updates a control on the work item form.
 
 .PARAMETER GroupId
-    The ID of the group to add the control to.
+    The ID of the group.
 
 .PARAMETER ProcessId
     The ID of the process.
 
-.PARAMETER ApiVersion
-    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
+.PARAMETER Organization
+    The name of the Azure DevOps organization.
+
+.PARAMETER ControlId
+    The ID of the control.
 
 .PARAMETER WitRefName
     The reference name of the work item type.
 
-.PARAMETER Organization
-    The name of the Azure DevOps organization.
+.PARAMETER ApiVersion
+    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
 
 .EXAMPLE
-    PS C:\> Set-AdsWorkProcesseWorkitemtypeLayoutGroupControl -GroupId $groupid -ProcessId $processid -ApiVersion $apiversion -WitRefName $witrefname -Organization $organization
+    PS C:\> Set-AdsWorkProcesseWorkitemtypeLayoutGroupControl -GroupId $groupid -ProcessId $processid -Organization $organization -ControlId $controlid -WitRefName $witrefname -ApiVersion $apiversion
 
-    Creates a control in a group.
+    Updates a control on the work item form.
 
 .LINK
     <unknown>
 #>
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     [CmdletBinding(DefaultParameterSetName = 'default')]
     param (
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
@@ -41,7 +45,11 @@
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $ApiVersion,
+        $Organization,
+
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [string]
+        $ControlId,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
@@ -49,7 +57,7 @@
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Organization
+        $ApiVersion
     )
     process {
         $__mapping = @{
@@ -58,7 +66,8 @@
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ApiVersion') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__path = 'https://dev.azure.com/{organization}/_apis/work/processes/{processId}/workItemTypes/{witRefName}/layout/groups/{groupId}/controls' -Replace '{groupId}',$GroupId -Replace '{processId}',$ProcessId -Replace '{witRefName}',$WitRefName -Replace '{organization}',$Organization
-        Invoke-RestRequest -Path $__path -Method post -Body $__body -Query $__query -Header $__header
+        $__path = 'https://dev.azure.com/{organization}/_apis/work/processes/{processId}/workItemTypes/{witRefName}/layout/groups/{groupId}/controls/{controlId}' -Replace '{groupId}',$GroupId -Replace '{processId}',$ProcessId -Replace '{organization}',$Organization -Replace '{controlId}',$ControlId -Replace '{witRefName}',$WitRefName
+
+        Invoke-RestRequest -Path $__path -Method patch -Body $__body -Query $__query -Header $__header
     }
 }

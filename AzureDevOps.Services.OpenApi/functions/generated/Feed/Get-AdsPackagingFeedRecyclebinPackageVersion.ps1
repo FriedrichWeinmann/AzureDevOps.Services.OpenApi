@@ -9,39 +9,39 @@
 The project parameter must be supplied if the feed was created in a project.
 If the feed is not associated with any project, omit the project parameter from the request.
 
-.PARAMETER FeedId
-    Name or Id of the feed.
-
 .PARAMETER PackageVersionId
     The package version Id 9guid Id, not the version string).
 
-.PARAMETER IncludeUrls
-    True to return REST Urls with the response.  Default is True.
-
-.PARAMETER PackageId
-    The package Id (GUID Id, not the package name).
-
-.PARAMETER ApiVersion
-    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
+.PARAMETER FeedId
+    Name or Id of the feed.
 
 .PARAMETER Project
     Project ID or project name
 
+.PARAMETER ApiVersion
+    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
+
 .PARAMETER Organization
     The name of the Azure DevOps organization.
 
-.EXAMPLE
-    PS C:\> Get-AdsPackagingFeedRecyclebinPackageVersion -FeedId $feedid -PackageId $packageid -ApiVersion $apiversion -Project $project -Organization $organization
+.PARAMETER PackageId
+    The package Id (GUID Id, not the package name).
 
-    Get a list of package versions within the recycle bin.
+.PARAMETER IncludeUrls
+    True to return REST Urls with the response.  Default is True.
+
+.EXAMPLE
+    PS C:\> Get-AdsPackagingFeedRecyclebinPackageVersion -PackageVersionId $packageversionid -FeedId $feedid -Project $project -ApiVersion $apiversion -Organization $organization -PackageId $packageid
+
+    Get information about a package version within the recycle bin.
 
 The project parameter must be supplied if the feed was created in a project.
 If the feed is not associated with any project, omit the project parameter from the request.
 
 .EXAMPLE
-    PS C:\> Get-AdsPackagingFeedRecyclebinPackageVersion -FeedId $feedid -PackageVersionId $packageversionid -PackageId $packageid -ApiVersion $apiversion -Project $project -Organization $organization
+    PS C:\> Get-AdsPackagingFeedRecyclebinPackageVersion -FeedId $feedid -Project $project -ApiVersion $apiversion -Organization $organization -PackageId $packageid
 
-    Get information about a package version within the recycle bin.
+    Get a list of package versions within the recycle bin.
 
 The project parameter must be supplied if the feed was created in a project.
 If the feed is not associated with any project, omit the project parameter from the request.
@@ -51,29 +51,14 @@ If the feed is not associated with any project, omit the project parameter from 
 #>
     [CmdletBinding(DefaultParameterSetName = 'default')]
     param (
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Recycle  Bin_Get Recycle Bin Package Version')]
-        [string]
-        $FeedId,
-
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Recycle  Bin_Get Recycle Bin Package Version')]
         [string]
         $PackageVersionId,
 
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Recycle  Bin_Get Recycle Bin Package Version')]
-        [boolean]
-        $IncludeUrls,
-
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Recycle  Bin_Get Recycle Bin Package Version')]
         [string]
-        $PackageId,
-
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Recycle  Bin_Get Recycle Bin Package Version')]
-        [string]
-        $ApiVersion,
+        $FeedId,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Recycle  Bin_Get Recycle Bin Package Version')]
@@ -83,18 +68,34 @@ If the feed is not associated with any project, omit the project parameter from 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Recycle  Bin_Get Recycle Bin Package Version')]
         [string]
-        $Organization
+        $ApiVersion,
+
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Recycle  Bin_Get Recycle Bin Package Version')]
+        [string]
+        $Organization,
+
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Recycle  Bin_Get Recycle Bin Package Version')]
+        [string]
+        $PackageId,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Recycle  Bin_Get Recycle Bin Package Version')]
+        [boolean]
+        $IncludeUrls
     )
     process {
         $__mapping = @{
-            'IncludeUrls' = 'includeUrls'
             'ApiVersion' = 'api-version'
+            'IncludeUrls' = 'includeUrls'
         }
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('IncludeUrls','ApiVersion') -Mapping $__mapping
+        $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ApiVersion','IncludeUrls') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__path = 'https://feeds.dev.azure.com/{organization}/{project}/_apis/packaging/Feeds/{feedId}/RecycleBin/Packages/{packageId}/Versions' -Replace '{feedId}',$FeedId -Replace '{packageId}',$PackageId -Replace '{project}',$Project -Replace '{organization}',$Organization
+        $__path = 'https://feeds.dev.azure.com/{organization}/{project}/_apis/packaging/Feeds/{feedId}/RecycleBin/Packages/{packageId}/Versions' -Replace '{feedId}',$FeedId -Replace '{project}',$Project -Replace '{organization}',$Organization -Replace '{packageId}',$PackageId
         if ($PackageVersionId) { $__path += "/$PackageVersionId" }
+
         Invoke-RestRequest -Path $__path -Method get -Body $__body -Query $__query -Header $__header
     }
 }

@@ -4,79 +4,73 @@
     
 
 .DESCRIPTION
-    Queues a build
-
-.PARAMETER DefinitionId
-    Optional definition id to queue a build without a body. Ignored if there's a valid body
-
-.PARAMETER ApiVersion
-    Version of the API to use.  This should be set to '7.1-preview.7' to use this version of the api.
-
-.PARAMETER CheckInTicket
-    
-
-.PARAMETER SourceBuildId
-    
-
-.PARAMETER IgnoreWarnings
-    
-
-.PARAMETER Project
-    Project ID or project name
+    Updates multiple builds.
 
 .PARAMETER Organization
     The name of the Azure DevOps organization.
 
-.EXAMPLE
-    PS C:\> Set-AdsBuildBuild -ApiVersion $apiversion -Project $project -Organization $organization
+.PARAMETER Retry
+    
 
-    Queues a build
+.PARAMETER BuildId
+    The ID of the build.
+
+.PARAMETER Project
+    Project ID or project name
+
+.PARAMETER ApiVersion
+    Version of the API to use.  This should be set to '7.1-preview.7' to use this version of the api.
+
+.EXAMPLE
+    PS C:\> Set-AdsBuildBuild -Organization $organization -BuildId $buildid -Project $project -ApiVersion $apiversion
+
+    Updates a build.
+
+.EXAMPLE
+    PS C:\> Set-AdsBuildBuild -Organization $organization -Project $project -ApiVersion $apiversion
+
+    Updates multiple builds.
 
 .LINK
     <unknown>
 #>
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     [CmdletBinding(DefaultParameterSetName = 'default')]
     param (
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [int32]
-        $DefinitionId,
-
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Builds_Update Build')]
         [string]
-        $ApiVersion,
+        $Organization,
 
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [string]
-        $CheckInTicket,
-
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [int32]
-        $SourceBuildId,
-
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Builds_Update Build')]
         [boolean]
-        $IgnoreWarnings,
+        $Retry,
+
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Builds_Update Build')]
+        [string]
+        $BuildId,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Builds_Update Build')]
         [string]
         $Project,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Builds_Update Build')]
         [string]
-        $Organization
+        $ApiVersion
     )
     process {
         $__mapping = @{
-            'DefinitionId' = 'definitionId'
+            'Retry' = 'retry'
             'ApiVersion' = 'api-version'
-            'CheckInTicket' = 'checkInTicket'
-            'SourceBuildId' = 'sourceBuildId'
-            'IgnoreWarnings' = 'ignoreWarnings'
         }
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('DefinitionId','ApiVersion','CheckInTicket','SourceBuildId','IgnoreWarnings') -Mapping $__mapping
+        $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('Retry','ApiVersion') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__path = 'https://dev.azure.com/{organization}/{project}/_apis/build/builds' -Replace '{project}',$Project -Replace '{organization}',$Organization
-        Invoke-RestRequest -Path $__path -Method post -Body $__body -Query $__query -Header $__header
+        $__path = 'https://dev.azure.com/{organization}/{project}/_apis/build/builds' -Replace '{organization}',$Organization -Replace '{project}',$Project
+        if ($BuildId) { $__path += "/$BuildId" }
+
+        Invoke-RestRequest -Path $__path -Method patch -Body $__body -Query $__query -Header $__header
     }
 }

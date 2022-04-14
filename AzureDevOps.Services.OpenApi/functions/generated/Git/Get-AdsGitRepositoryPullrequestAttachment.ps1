@@ -12,27 +12,27 @@
 .PARAMETER FileName
     The name of the attachment.
 
-.PARAMETER ApiVersion
-    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
-
 .PARAMETER Project
     Project ID or project name
-
-.PARAMETER RepositoryId
-    The repository ID of the pull request’s target branch.
 
 .PARAMETER Organization
     The name of the Azure DevOps organization.
 
-.EXAMPLE
-    PS C:\> Get-AdsGitRepositoryPullrequestAttachment -PullRequestId $pullrequestid -ApiVersion $apiversion -Project $project -RepositoryId $repositoryid -Organization $organization
+.PARAMETER RepositoryId
+    The repository ID of the pull request’s target branch.
 
-    Get a list of files attached to a given pull request.
+.PARAMETER ApiVersion
+    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
 
 .EXAMPLE
-    PS C:\> Get-AdsGitRepositoryPullrequestAttachment -PullRequestId $pullrequestid -FileName $filename -ApiVersion $apiversion -Project $project -RepositoryId $repositoryid -Organization $organization
+    PS C:\> Get-AdsGitRepositoryPullrequestAttachment -PullRequestId $pullrequestid -FileName $filename -Project $project -Organization $organization -RepositoryId $repositoryid -ApiVersion $apiversion
 
     Get the file content of a pull request attachment.
+
+.EXAMPLE
+    PS C:\> Get-AdsGitRepositoryPullrequestAttachment -PullRequestId $pullrequestid -Project $project -Organization $organization -RepositoryId $repositoryid -ApiVersion $apiversion
+
+    Get a list of files attached to a given pull request.
 
 .LINK
     <unknown>
@@ -51,12 +51,12 @@
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Pull Request Attachments_Get')]
         [string]
-        $ApiVersion,
+        $Project,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Pull Request Attachments_Get')]
         [string]
-        $Project,
+        $Organization,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Pull Request Attachments_Get')]
@@ -66,7 +66,7 @@
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Pull Request Attachments_Get')]
         [string]
-        $Organization
+        $ApiVersion
     )
     process {
         $__mapping = @{
@@ -75,8 +75,9 @@
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ApiVersion') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__path = 'https://dev.azure.com/{organization}/{project}/_apis/git/repositories/{repositoryId}/pullRequests/{pullRequestId}/attachments' -Replace '{pullRequestId}',$PullRequestId -Replace '{project}',$Project -Replace '{repositoryId}',$RepositoryId -Replace '{organization}',$Organization
+        $__path = 'https://dev.azure.com/{organization}/{project}/_apis/git/repositories/{repositoryId}/pullRequests/{pullRequestId}/attachments' -Replace '{pullRequestId}',$PullRequestId -Replace '{project}',$Project -Replace '{organization}',$Organization -Replace '{repositoryId}',$RepositoryId
         if ($FileName) { $__path += "/$FileName" }
+
         Invoke-RestRequest -Path $__path -Method get -Body $__body -Query $__query -Header $__header
     }
 }

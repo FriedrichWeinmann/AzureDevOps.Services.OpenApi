@@ -6,30 +6,30 @@
 .DESCRIPTION
     Get a list of consumer actions for a specific consumer.
 
-.PARAMETER ApiVersion
-    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
-
-.PARAMETER ConsumerId
-    ID for a consumer.
+.PARAMETER Organization
+    The name of the Azure DevOps organization.
 
 .PARAMETER ConsumerActionId
     ID for a consumerActionId.
 
-.PARAMETER Organization
-    The name of the Azure DevOps organization.
+.PARAMETER ConsumerId
+    ID for a consumer.
 
 .PARAMETER PublisherId
     
 
-.EXAMPLE
-    PS C:\> Get-AdsHookConsumerAction -ApiVersion $apiversion -ConsumerId $consumerid -Organization $organization
-
-    Get a list of consumer actions for a specific consumer.
+.PARAMETER ApiVersion
+    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
 
 .EXAMPLE
-    PS C:\> Get-AdsHookConsumerAction -ApiVersion $apiversion -ConsumerId $consumerid -ConsumerActionId $consumeractionid -Organization $organization
+    PS C:\> Get-AdsHookConsumerAction -Organization $organization -ConsumerActionId $consumeractionid -ConsumerId $consumerid -ApiVersion $apiversion
 
     Get details about a specific consumer action.
+
+.EXAMPLE
+    PS C:\> Get-AdsHookConsumerAction -Organization $organization -ConsumerId $consumerid -ApiVersion $apiversion
+
+    Get a list of consumer actions for a specific consumer.
 
 .LINK
     <unknown>
@@ -39,12 +39,7 @@
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Consumers_Get Consumer Action')]
         [string]
-        $ApiVersion,
-
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Consumers_Get Consumer Action')]
-        [string]
-        $ConsumerId,
+        $Organization,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Consumers_Get Consumer Action')]
         [string]
@@ -53,23 +48,29 @@
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Consumers_Get Consumer Action')]
         [string]
-        $Organization,
+        $ConsumerId,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Consumers_Get Consumer Action')]
         [string]
-        $PublisherId
+        $PublisherId,
+
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Consumers_Get Consumer Action')]
+        [string]
+        $ApiVersion
     )
     process {
         $__mapping = @{
-            'ApiVersion' = 'api-version'
             'PublisherId' = 'publisherId'
+            'ApiVersion' = 'api-version'
         }
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ApiVersion','PublisherId') -Mapping $__mapping
+        $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('PublisherId','ApiVersion') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__path = 'https://dev.azure.com/{organization}/_apis/hooks/consumers/{consumerId}/actions' -Replace '{consumerId}',$ConsumerId -Replace '{organization}',$Organization
+        $__path = 'https://dev.azure.com/{organization}/_apis/hooks/consumers/{consumerId}/actions' -Replace '{organization}',$Organization -Replace '{consumerId}',$ConsumerId
         if ($ConsumerActionId) { $__path += "/$ConsumerActionId" }
+
         Invoke-RestRequest -Path $__path -Method get -Body $__body -Query $__query -Header $__header
     }
 }

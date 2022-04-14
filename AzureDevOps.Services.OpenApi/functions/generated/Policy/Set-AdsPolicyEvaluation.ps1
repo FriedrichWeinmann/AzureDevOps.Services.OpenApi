@@ -13,20 +13,20 @@ Although any policy evaluation can be requeued, at present only build policies p
 in response. Requeueing a build policy will queue a new build to run (cancelling any existing build which
 is running).
 
-.PARAMETER ApiVersion
-    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
-
-.PARAMETER EvaluationId
-    ID of the policy evaluation to be retrieved.
-
 .PARAMETER Organization
     The name of the Azure DevOps organization.
+
+.PARAMETER ApiVersion
+    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
 
 .PARAMETER Project
     Project ID or project name
 
+.PARAMETER EvaluationId
+    ID of the policy evaluation to be retrieved.
+
 .EXAMPLE
-    PS C:\> Set-AdsPolicyEvaluation -ApiVersion $apiversion -EvaluationId $evaluationid -Organization $organization -Project $project
+    PS C:\> Set-AdsPolicyEvaluation -Organization $organization -ApiVersion $apiversion -Project $project -EvaluationId $evaluationid
 
     Requeue the policy evaluation.
 
@@ -40,23 +40,24 @@ is running).
 .LINK
     <unknown>
 #>
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     [CmdletBinding(DefaultParameterSetName = 'default')]
     param (
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [string]
-        $ApiVersion,
-
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [string]
-        $EvaluationId,
-
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
         $Organization,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Project
+        $ApiVersion,
+
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [string]
+        $Project,
+
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [string]
+        $EvaluationId
     )
     process {
         $__mapping = @{
@@ -65,7 +66,8 @@ is running).
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ApiVersion') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__path = 'https://dev.azure.com/{organization}/{project}/_apis/policy/evaluations/{evaluationId}' -Replace '{evaluationId}',$EvaluationId -Replace '{organization}',$Organization -Replace '{project}',$Project
+        $__path = 'https://dev.azure.com/{organization}/{project}/_apis/policy/evaluations/{evaluationId}' -Replace '{organization}',$Organization -Replace '{project}',$Project -Replace '{evaluationId}',$EvaluationId
+
         Invoke-RestRequest -Path $__path -Method patch -Body $__body -Query $__query -Header $__header
     }
 }

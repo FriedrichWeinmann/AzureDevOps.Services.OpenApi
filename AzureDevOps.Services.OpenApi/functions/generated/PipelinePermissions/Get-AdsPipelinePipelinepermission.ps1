@@ -6,23 +6,23 @@
 .DESCRIPTION
     Given a ResourceType and ResourceId, returns authorized definitions for that resource.
 
+.PARAMETER Organization
+    The name of the Azure DevOps organization.
+
 .PARAMETER ResourceType
     
-
-.PARAMETER ApiVersion
-    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
 
 .PARAMETER ResourceId
     
 
-.PARAMETER Organization
-    The name of the Azure DevOps organization.
-
 .PARAMETER Project
     Project ID or project name
 
+.PARAMETER ApiVersion
+    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
+
 .EXAMPLE
-    PS C:\> Get-AdsPipelinePipelinepermission -ResourceType $resourcetype -ApiVersion $apiversion -ResourceId $resourceid -Organization $organization -Project $project
+    PS C:\> Get-AdsPipelinePipelinepermission -Organization $organization -ResourceType $resourcetype -ResourceId $resourceid -Project $project -ApiVersion $apiversion
 
     Given a ResourceType and ResourceId, returns authorized definitions for that resource.
 
@@ -33,11 +33,11 @@
     param (
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $ResourceType,
+        $Organization,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $ApiVersion,
+        $ResourceType,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
@@ -45,11 +45,11 @@
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Organization,
+        $Project,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Project
+        $ApiVersion
     )
     process {
         $__mapping = @{
@@ -58,7 +58,8 @@
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ApiVersion') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__path = 'https://dev.azure.com/{organization}/{project}/_apis/pipelines/pipelinepermissions/{resourceType}/{resourceId}' -Replace '{resourceType}',$ResourceType -Replace '{resourceId}',$ResourceId -Replace '{organization}',$Organization -Replace '{project}',$Project
+        $__path = 'https://dev.azure.com/{organization}/{project}/_apis/pipelines/pipelinepermissions/{resourceType}/{resourceId}' -Replace '{organization}',$Organization -Replace '{resourceType}',$ResourceType -Replace '{resourceId}',$ResourceId -Replace '{project}',$Project
+
         Invoke-RestRequest -Path $__path -Method get -Body $__body -Query $__query -Header $__header
     }
 }

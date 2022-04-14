@@ -6,20 +6,20 @@
 .DESCRIPTION
     List all security namespaces or just the specified namespace.
 
-.PARAMETER SecurityNamespaceId
-    Security namespace identifier.
+.PARAMETER Organization
+    The name of the Azure DevOps organization.
 
 .PARAMETER LocalOnly
     If true, retrieve only local security namespaces.
 
+.PARAMETER SecurityNamespaceId
+    Security namespace identifier.
+
 .PARAMETER ApiVersion
     Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
 
-.PARAMETER Organization
-    The name of the Azure DevOps organization.
-
 .EXAMPLE
-    PS C:\> Get-AdsSecuritynamespace -SecurityNamespaceId $securitynamespaceid -ApiVersion $apiversion -Organization $organization
+    PS C:\> Get-AdsSecuritynamespace -Organization $organization -SecurityNamespaceId $securitynamespaceid -ApiVersion $apiversion
 
     List all security namespaces or just the specified namespace.
 
@@ -30,7 +30,7 @@
     param (
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $SecurityNamespaceId,
+        $Organization,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [boolean]
@@ -38,11 +38,11 @@
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $ApiVersion,
+        $SecurityNamespaceId,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Organization
+        $ApiVersion
     )
     process {
         $__mapping = @{
@@ -52,7 +52,8 @@
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('LocalOnly','ApiVersion') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__path = 'https://dev.azure.com/{organization}/_apis/securitynamespaces/{securityNamespaceId}' -Replace '{securityNamespaceId}',$SecurityNamespaceId -Replace '{organization}',$Organization
+        $__path = 'https://dev.azure.com/{organization}/_apis/securitynamespaces/{securityNamespaceId}' -Replace '{organization}',$Organization -Replace '{securityNamespaceId}',$SecurityNamespaceId
+
         Invoke-RestRequest -Path $__path -Method get -Body $__body -Query $__query -Header $__header
     }
 }

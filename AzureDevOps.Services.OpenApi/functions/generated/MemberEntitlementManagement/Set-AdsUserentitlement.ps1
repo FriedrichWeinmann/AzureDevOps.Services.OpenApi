@@ -1,4 +1,4 @@
-﻿function Set-AdsUserentitlement {
+﻿function Set-AdsUserEntitlement {
 <#
 .SYNOPSIS
     
@@ -13,13 +13,14 @@
     The name of the Azure DevOps organization.
 
 .EXAMPLE
-    PS C:\> Set-AdsUserentitlement -ApiVersion $apiversion -Organization $organization
+    PS C:\> Set-AdsUserEntitlement -ApiVersion $apiversion -Organization $organization
 
     Add a user, assign license and extensions and make them a member of a project group in an account.
 
 .LINK
     <unknown>
 #>
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     [CmdletBinding(DefaultParameterSetName = 'default')]
     param (
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
@@ -38,6 +39,7 @@
         $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ApiVersion') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__path = 'https://vsaex.dev.azure.com/{organization}/_apis/userentitlements' -Replace '{organization}',$Organization
+
         Invoke-RestRequest -Path $__path -Method post -Body $__body -Query $__query -Header $__header
     }
 }

@@ -32,6 +32,7 @@ before the datetime at which the rule was created and which match one or more ad
 .LINK
     <unknown>
 #>
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     [CmdletBinding(DefaultParameterSetName = 'default')]
     param (
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
@@ -50,6 +51,7 @@ before the datetime at which the rule was created and which match one or more ad
         $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ApiVersion') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__path = 'https://vssps.dev.azure.com/{organization}/_apis/tokenadmin/revocationrules' -Replace '{organization}',$Organization
+
         Invoke-RestRequest -Path $__path -Method post -Body $__body -Query $__query -Header $__header
     }
 }

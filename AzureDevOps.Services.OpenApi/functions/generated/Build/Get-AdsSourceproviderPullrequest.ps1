@@ -6,29 +6,29 @@
 .DESCRIPTION
     Gets a pull request object from source provider.
 
-.PARAMETER ProviderName
-    The name of the source provider.
-
-.PARAMETER ServiceEndpointId
-    If specified, the ID of the service endpoint to query. Can only be omitted for providers that do not use service endpoints, e.g. TFVC or TFGit.
-
 .PARAMETER PullRequestId
     Vendor-specific id of the pull request.
-
-.PARAMETER ApiVersion
-    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
-
-.PARAMETER Project
-    Project ID or project name
-
-.PARAMETER RepositoryId
-    Vendor-specific identifier or the name of the repository that contains the pull request.
 
 .PARAMETER Organization
     The name of the Azure DevOps organization.
 
+.PARAMETER ServiceEndpointId
+    If specified, the ID of the service endpoint to query. Can only be omitted for providers that do not use service endpoints, e.g. TFVC or TFGit.
+
+.PARAMETER Project
+    Project ID or project name
+
+.PARAMETER ProviderName
+    The name of the source provider.
+
+.PARAMETER RepositoryId
+    Vendor-specific identifier or the name of the repository that contains the pull request.
+
+.PARAMETER ApiVersion
+    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
+
 .EXAMPLE
-    PS C:\> Get-AdsSourceproviderPullrequest -ProviderName $providername -PullRequestId $pullrequestid -ApiVersion $apiversion -Project $project -Organization $organization
+    PS C:\> Get-AdsSourceproviderPullrequest -PullRequestId $pullrequestid -Organization $organization -Project $project -ProviderName $providername -ApiVersion $apiversion
 
     Gets a pull request object from source provider.
 
@@ -39,7 +39,11 @@
     param (
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $ProviderName,
+        $PullRequestId,
+
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [string]
+        $Organization,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
@@ -47,15 +51,11 @@
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $PullRequestId,
-
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [string]
-        $ApiVersion,
-
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [string]
         $Project,
+
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [string]
+        $ProviderName,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
@@ -63,18 +63,19 @@
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Organization
+        $ApiVersion
     )
     process {
         $__mapping = @{
             'ServiceEndpointId' = 'serviceEndpointId'
-            'ApiVersion' = 'api-version'
             'RepositoryId' = 'repositoryId'
+            'ApiVersion' = 'api-version'
         }
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ServiceEndpointId','ApiVersion','RepositoryId') -Mapping $__mapping
+        $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ServiceEndpointId','RepositoryId','ApiVersion') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__path = 'https://dev.azure.com/{organization}/{project}/_apis/sourceProviders/{providerName}/pullrequests/{pullRequestId}' -Replace '{providerName}',$ProviderName -Replace '{pullRequestId}',$PullRequestId -Replace '{project}',$Project -Replace '{organization}',$Organization
+        $__path = 'https://dev.azure.com/{organization}/{project}/_apis/sourceProviders/{providerName}/pullrequests/{pullRequestId}' -Replace '{pullRequestId}',$PullRequestId -Replace '{organization}',$Organization -Replace '{project}',$Project -Replace '{providerName}',$ProviderName
+
         Invoke-RestRequest -Path $__path -Method get -Body $__body -Query $__query -Header $__header
     }
 }

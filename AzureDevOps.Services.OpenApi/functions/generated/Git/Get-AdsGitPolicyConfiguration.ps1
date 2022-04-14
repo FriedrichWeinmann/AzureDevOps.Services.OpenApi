@@ -16,14 +16,8 @@ For all of the examples above, when policyType is set, it'll restrict results to
 .PARAMETER ContinuationToken
     Pass a policy configuration ID to fetch the next page of results, up to top number of results, for this endpoint.
 
-.PARAMETER RefName
-    The fully-qualified Git ref name (e.g. refs/heads/master).
-
 .PARAMETER PolicyType
     The policy type filter.
-
-.PARAMETER ApiVersion
-    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
 
 .PARAMETER Top
     Maximum number of policies to return.
@@ -31,14 +25,20 @@ For all of the examples above, when policyType is set, it'll restrict results to
 .PARAMETER Project
     Project ID or project name
 
-.PARAMETER RepositoryId
-    The repository id.
+.PARAMETER ApiVersion
+    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
 
 .PARAMETER Organization
     The name of the Azure DevOps organization.
 
+.PARAMETER RepositoryId
+    The repository id.
+
+.PARAMETER RefName
+    The fully-qualified Git ref name (e.g. refs/heads/master).
+
 .EXAMPLE
-    PS C:\> Get-AdsGitPolicyConfiguration -ApiVersion $apiversion -Project $project -Organization $organization
+    PS C:\> Get-AdsGitPolicyConfiguration -Project $project -ApiVersion $apiversion -Organization $organization
 
     Retrieve a list of policy configurations by a given set of scope/filtering criteria.
 
@@ -60,15 +60,7 @@ For all of the examples above, when policyType is set, it'll restrict results to
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $RefName,
-
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [string]
         $PolicyType,
-
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [string]
-        $ApiVersion,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [int32]
@@ -78,27 +70,36 @@ For all of the examples above, when policyType is set, it'll restrict results to
         [string]
         $Project,
 
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [string]
+        $ApiVersion,
+
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [string]
+        $Organization,
+
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
         $RepositoryId,
 
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Organization
+        $RefName
     )
     process {
         $__mapping = @{
             'ContinuationToken' = 'continuationToken'
-            'RefName' = 'refName'
             'PolicyType' = 'policyType'
-            'ApiVersion' = 'api-version'
             'Top' = '$top'
+            'ApiVersion' = 'api-version'
             'RepositoryId' = 'repositoryId'
+            'RefName' = 'refName'
         }
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ContinuationToken','RefName','PolicyType','ApiVersion','Top','RepositoryId') -Mapping $__mapping
+        $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ContinuationToken','PolicyType','Top','ApiVersion','RepositoryId','RefName') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__path = 'https://dev.azure.com/{organization}/{project}/_apis/git/policy/configurations' -Replace '{project}',$Project -Replace '{organization}',$Organization
+
         Invoke-RestRequest -Path $__path -Method get -Body $__body -Query $__query -Header $__header
     }
 }

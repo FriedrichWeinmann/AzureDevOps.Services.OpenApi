@@ -6,8 +6,8 @@
 .DESCRIPTION
     Gets top 10000 runs for a particular pipeline.
 
-.PARAMETER PipelineId
-    The pipeline id
+.PARAMETER Organization
+    The name of the Azure DevOps organization.
 
 .PARAMETER ApiVersion
     Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
@@ -15,21 +15,21 @@
 .PARAMETER RunId
     The run id
 
-.PARAMETER Organization
-    The name of the Azure DevOps organization.
-
 .PARAMETER Project
     Project ID or project name
 
-.EXAMPLE
-    PS C:\> Get-AdsPipelineRun -PipelineId $pipelineid -ApiVersion $apiversion -Organization $organization -Project $project
-
-    Gets top 10000 runs for a particular pipeline.
+.PARAMETER PipelineId
+    The pipeline id
 
 .EXAMPLE
-    PS C:\> Get-AdsPipelineRun -PipelineId $pipelineid -ApiVersion $apiversion -RunId $runid -Organization $organization -Project $project
+    PS C:\> Get-AdsPipelineRun -Organization $organization -ApiVersion $apiversion -RunId $runid -Project $project -PipelineId $pipelineid
 
     Gets a run for a particular pipeline.
+
+.EXAMPLE
+    PS C:\> Get-AdsPipelineRun -Organization $organization -ApiVersion $apiversion -Project $project -PipelineId $pipelineid
+
+    Gets top 10000 runs for a particular pipeline.
 
 .LINK
     <unknown>
@@ -39,7 +39,7 @@
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Runs_Get')]
         [string]
-        $PipelineId,
+        $Organization,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Runs_Get')]
@@ -53,12 +53,12 @@
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Runs_Get')]
         [string]
-        $Organization,
+        $Project,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Runs_Get')]
         [string]
-        $Project
+        $PipelineId
     )
     process {
         $__mapping = @{
@@ -67,8 +67,9 @@
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ApiVersion') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__path = 'https://dev.azure.com/{organization}/{project}/_apis/pipelines/{pipelineId}/runs' -Replace '{pipelineId}',$PipelineId -Replace '{organization}',$Organization -Replace '{project}',$Project
+        $__path = 'https://dev.azure.com/{organization}/{project}/_apis/pipelines/{pipelineId}/runs' -Replace '{organization}',$Organization -Replace '{project}',$Project -Replace '{pipelineId}',$PipelineId
         if ($RunId) { $__path += "/$RunId" }
+
         Invoke-RestRequest -Path $__path -Method get -Body $__body -Query $__query -Header $__header
     }
 }

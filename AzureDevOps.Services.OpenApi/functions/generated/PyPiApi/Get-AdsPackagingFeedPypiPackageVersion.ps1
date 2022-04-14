@@ -15,23 +15,23 @@ If the feed is not associated with any project, omit the project parameter from 
 .PARAMETER PackageVersion
     Version of the package.
 
-.PARAMETER ShowDeleted
-    True to show information for deleted package versions.
-
-.PARAMETER PackageName
-    Name of the package.
-
 .PARAMETER ApiVersion
     Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
-
-.PARAMETER Project
-    Project ID or project name
 
 .PARAMETER Organization
     The name of the Azure DevOps organization.
 
+.PARAMETER ShowDeleted
+    True to show information for deleted package versions.
+
+.PARAMETER Project
+    Project ID or project name
+
+.PARAMETER PackageName
+    Name of the package.
+
 .EXAMPLE
-    PS C:\> Get-AdsPackagingFeedPypiPackageVersion -FeedId $feedid -PackageVersion $packageversion -PackageName $packagename -ApiVersion $apiversion -Project $project -Organization $organization
+    PS C:\> Get-AdsPackagingFeedPypiPackageVersion -FeedId $feedid -PackageVersion $packageversion -ApiVersion $apiversion -Organization $organization -Project $project -PackageName $packagename
 
     Get information about a package version.
 
@@ -51,17 +51,17 @@ If the feed is not associated with any project, omit the project parameter from 
         [string]
         $PackageVersion,
 
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [boolean]
-        $ShowDeleted,
-
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [string]
-        $PackageName,
-
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
         $ApiVersion,
+
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [string]
+        $Organization,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [boolean]
+        $ShowDeleted,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
@@ -69,17 +69,18 @@ If the feed is not associated with any project, omit the project parameter from 
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Organization
+        $PackageName
     )
     process {
         $__mapping = @{
-            'ShowDeleted' = 'showDeleted'
             'ApiVersion' = 'api-version'
+            'ShowDeleted' = 'showDeleted'
         }
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ShowDeleted','ApiVersion') -Mapping $__mapping
+        $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ApiVersion','ShowDeleted') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__path = 'https://pkgs.dev.azure.com/{organization}/{project}/_apis/packaging/feeds/{feedId}/pypi/packages/{packageName}/versions/{packageVersion}' -Replace '{feedId}',$FeedId -Replace '{packageVersion}',$PackageVersion -Replace '{packageName}',$PackageName -Replace '{project}',$Project -Replace '{organization}',$Organization
+        $__path = 'https://pkgs.dev.azure.com/{organization}/{project}/_apis/packaging/feeds/{feedId}/pypi/packages/{packageName}/versions/{packageVersion}' -Replace '{feedId}',$FeedId -Replace '{packageVersion}',$PackageVersion -Replace '{organization}',$Organization -Replace '{project}',$Project -Replace '{packageName}',$PackageName
+
         Invoke-RestRequest -Path $__path -Method get -Body $__body -Query $__query -Header $__header
     }
 }

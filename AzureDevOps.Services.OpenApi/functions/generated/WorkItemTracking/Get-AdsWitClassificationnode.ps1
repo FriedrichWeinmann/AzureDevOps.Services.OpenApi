@@ -4,51 +4,37 @@
     
 
 .DESCRIPTION
-    Gets the classification node for a given node path.
-
-.PARAMETER Depth
-    Depth of children to fetch.
-
-.PARAMETER Path
-    Path of the classification node.
-
-.PARAMETER StructureGroup
-    Structure group of the classification node, area or iteration.
-
-.PARAMETER ApiVersion
-    Version of the API to use.  This should be set to '7.1-preview.2' to use this version of the api.
-
-.PARAMETER Project
-    Project ID or project name
+    Gets root classification nodes under the project.
 
 .PARAMETER Organization
     The name of the Azure DevOps organization.
 
-.EXAMPLE
-    PS C:\> Get-AdsWitClassificationnode -Path $path -StructureGroup $structuregroup -ApiVersion $apiversion -Project $project -Organization $organization
+.PARAMETER Depth
+    Depth of children to fetch.
 
-    Gets the classification node for a given node path.
+.PARAMETER Project
+    Project ID or project name
+
+.PARAMETER ApiVersion
+    Version of the API to use.  This should be set to '7.1-preview.2' to use this version of the api.
+
+.EXAMPLE
+    PS C:\> Get-AdsWitClassificationnode -Organization $organization -Project $project -ApiVersion $apiversion
+
+    Gets root classification nodes under the project.
 
 .LINK
     <unknown>
 #>
     [CmdletBinding(DefaultParameterSetName = 'default')]
     param (
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [string]
+        $Organization,
+
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [int32]
         $Depth,
-
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [string]
-        $Path,
-
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [string]
-        $StructureGroup,
-
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [string]
-        $ApiVersion,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
@@ -56,7 +42,7 @@
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Organization
+        $ApiVersion
     )
     process {
         $__mapping = @{
@@ -66,7 +52,8 @@
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('Depth','ApiVersion') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__path = 'https://dev.azure.com/{organization}/{project}/_apis/wit/classificationnodes/{structureGroup}/{path}' -Replace '{path}',$Path -Replace '{structureGroup}',$StructureGroup -Replace '{project}',$Project -Replace '{organization}',$Organization
+        $__path = 'https://dev.azure.com/{organization}/{project}/_apis/wit/classificationnodes' -Replace '{organization}',$Organization -Replace '{project}',$Project
+
         Invoke-RestRequest -Path $__path -Method get -Body $__body -Query $__query -Header $__header
     }
 }

@@ -6,8 +6,8 @@
 .DESCRIPTION
     Returns a list of all work item types in the process.
 
-.PARAMETER ApiVersion
-    Version of the API to use.  This should be set to '4.1-preview.1' to use this version of the api.
+.PARAMETER Organization
+    The name of the Azure DevOps organization.
 
 .PARAMETER ProcessId
     The ID of the process
@@ -18,16 +18,16 @@
 .PARAMETER WitRefName
     The reference name of the work item type
 
-.PARAMETER Organization
-    The name of the Azure DevOps organization.
+.PARAMETER ApiVersion
+    Version of the API to use.  This should be set to '4.1-preview.1' to use this version of the api.
 
 .EXAMPLE
-    PS C:\> Get-AdsWorkProcessdefinitionWorkitemtype -ApiVersion $apiversion -ProcessId $processid -WitRefName $witrefname -Organization $organization
+    PS C:\> Get-AdsWorkProcessdefinitionWorkitemtype -Organization $organization -ProcessId $processid -WitRefName $witrefname -ApiVersion $apiversion
 
     Returns a work item type of the process.
 
 .EXAMPLE
-    PS C:\> Get-AdsWorkProcessdefinitionWorkitemtype -ApiVersion $apiversion -ProcessId $processid -Organization $organization
+    PS C:\> Get-AdsWorkProcessdefinitionWorkitemtype -Organization $organization -ProcessId $processid -ApiVersion $apiversion
 
     Returns a list of all work item types in the process.
 
@@ -39,7 +39,7 @@
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Get Work Item Type')]
         [string]
-        $ApiVersion,
+        $Organization,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Get Work Item Type')]
@@ -58,18 +58,19 @@
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Get Work Item Type')]
         [string]
-        $Organization
+        $ApiVersion
     )
     process {
         $__mapping = @{
-            'ApiVersion' = 'api-version'
             'Expand' = '$expand'
+            'ApiVersion' = 'api-version'
         }
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ApiVersion','Expand') -Mapping $__mapping
+        $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('Expand','ApiVersion') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__path = 'https://dev.azure.com/{organization}/_apis/work/processdefinitions/{processId}/workitemtypes' -Replace '{processId}',$ProcessId -Replace '{organization}',$Organization
+        $__path = 'https://dev.azure.com/{organization}/_apis/work/processdefinitions/{processId}/workitemtypes' -Replace '{organization}',$Organization -Replace '{processId}',$ProcessId
         if ($WitRefName) { $__path += "/$WitRefName" }
+
         Invoke-RestRequest -Path $__path -Method get -Body $__body -Query $__query -Header $__header
     }
 }

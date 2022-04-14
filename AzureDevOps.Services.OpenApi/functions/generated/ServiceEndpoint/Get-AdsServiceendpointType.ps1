@@ -6,20 +6,20 @@
 .DESCRIPTION
     Get service endpoint types.
 
-.PARAMETER Type
-    Type of service endpoint.
+.PARAMETER Organization
+    The name of the Azure DevOps organization.
 
 .PARAMETER ApiVersion
     Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
 
-.PARAMETER Organization
-    The name of the Azure DevOps organization.
+.PARAMETER Type
+    Type of service endpoint.
 
 .PARAMETER Scheme
     Scheme of service endpoint.
 
 .EXAMPLE
-    PS C:\> Get-AdsServiceendpointType -ApiVersion $apiversion -Organization $organization
+    PS C:\> Get-AdsServiceendpointType -Organization $organization -ApiVersion $apiversion
 
     Get service endpoint types.
 
@@ -28,17 +28,17 @@
 #>
     [CmdletBinding(DefaultParameterSetName = 'default')]
     param (
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Type,
+        $Organization,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
         $ApiVersion,
 
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Organization,
+        $Type,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
@@ -46,14 +46,15 @@
     )
     process {
         $__mapping = @{
-            'Type' = 'type'
             'ApiVersion' = 'api-version'
+            'Type' = 'type'
             'Scheme' = 'scheme'
         }
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('Type','ApiVersion','Scheme') -Mapping $__mapping
+        $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ApiVersion','Type','Scheme') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__path = 'https://dev.azure.com/{organization}/_apis/serviceendpoint/types' -Replace '{organization}',$Organization
+
         Invoke-RestRequest -Path $__path -Method get -Body $__body -Query $__query -Header $__header
     }
 }

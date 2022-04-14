@@ -6,23 +6,23 @@
 .DESCRIPTION
     
 
-.PARAMETER ApiVersion
-    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
-
-.PARAMETER ContinuationToken
-    
+.PARAMETER Organization
+    The name of the Azure DevOps organization.
 
 .PARAMETER MaxPageSize
     
 
-.PARAMETER Organization
-    The name of the Azure DevOps organization.
+.PARAMETER ContinuationToken
+    
 
 .PARAMETER Project
     Project ID or project name
 
+.PARAMETER ApiVersion
+    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
+
 .EXAMPLE
-    PS C:\> Get-AdsWitReportingWorkitemrevisionDiscussion -ApiVersion $apiversion -Organization $organization -Project $project
+    PS C:\> Get-AdsWitReportingWorkitemrevisionDiscussion -Organization $organization -Project $project -ApiVersion $apiversion
 
     <insert description here>
 
@@ -33,34 +33,35 @@
     param (
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $ApiVersion,
-
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [string]
-        $ContinuationToken,
+        $Organization,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [int32]
         $MaxPageSize,
 
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Organization,
+        $ContinuationToken,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Project
+        $Project,
+
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [string]
+        $ApiVersion
     )
     process {
         $__mapping = @{
-            'ApiVersion' = 'api-version'
-            'ContinuationToken' = 'continuationToken'
             'MaxPageSize' = '$maxPageSize'
+            'ContinuationToken' = 'continuationToken'
+            'ApiVersion' = 'api-version'
         }
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ApiVersion','ContinuationToken','MaxPageSize') -Mapping $__mapping
+        $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('MaxPageSize','ContinuationToken','ApiVersion') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__path = 'https://dev.azure.com/{organization}/{project}/_apis/wit/reporting/workItemRevisions/discussions' -Replace '{organization}',$Organization -Replace '{project}',$Project
+
         Invoke-RestRequest -Path $__path -Method get -Body $__body -Query $__query -Header $__header
     }
 }

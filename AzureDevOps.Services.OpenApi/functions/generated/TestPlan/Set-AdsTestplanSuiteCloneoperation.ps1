@@ -6,31 +6,32 @@
 .DESCRIPTION
     Clone test suite
 
-.PARAMETER ApiVersion
-    Version of the API to use.  This should be set to '7.1-preview.2' to use this version of the api.
+.PARAMETER Organization
+    The name of the Azure DevOps organization.
 
 .PARAMETER DeepClone
     Clones all the associated test cases as well
 
-.PARAMETER Organization
-    The name of the Azure DevOps organization.
-
 .PARAMETER Project
     Project ID or project name
 
+.PARAMETER ApiVersion
+    Version of the API to use.  This should be set to '7.1-preview.2' to use this version of the api.
+
 .EXAMPLE
-    PS C:\> Set-AdsTestplanSuiteCloneoperation -ApiVersion $apiversion -Organization $organization -Project $project
+    PS C:\> Set-AdsTestplanSuiteCloneoperation -Organization $organization -Project $project -ApiVersion $apiversion
 
     Clone test suite
 
 .LINK
     <unknown>
 #>
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     [CmdletBinding(DefaultParameterSetName = 'default')]
     param (
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $ApiVersion,
+        $Organization,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [boolean]
@@ -38,21 +39,22 @@
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Organization,
+        $Project,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Project
+        $ApiVersion
     )
     process {
         $__mapping = @{
-            'ApiVersion' = 'api-version'
             'DeepClone' = 'deepClone'
+            'ApiVersion' = 'api-version'
         }
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ApiVersion','DeepClone') -Mapping $__mapping
+        $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('DeepClone','ApiVersion') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__path = 'https://dev.azure.com/{organization}/{project}/_apis/testplan/Suites/CloneOperation' -Replace '{organization}',$Organization -Replace '{project}',$Project
+
         Invoke-RestRequest -Path $__path -Method post -Body $__body -Query $__query -Header $__header
     }
 }

@@ -6,28 +6,29 @@
 .DESCRIPTION
     
 
-.PARAMETER AgentCloudId
-    
+.PARAMETER Organization
+    The name of the Azure DevOps organization.
 
 .PARAMETER ApiVersion
     Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
 
-.PARAMETER Organization
-    The name of the Azure DevOps organization.
+.PARAMETER AgentCloudId
+    
 
 .EXAMPLE
-    PS C:\> Remove-AdsDistributedtaskAgentcloud -AgentCloudId $agentcloudid -ApiVersion $apiversion -Organization $organization
+    PS C:\> Remove-AdsDistributedtaskAgentcloud -Organization $organization -ApiVersion $apiversion -AgentCloudId $agentcloudid
 
     <insert description here>
 
 .LINK
     <unknown>
 #>
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     [CmdletBinding(DefaultParameterSetName = 'default')]
     param (
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $AgentCloudId,
+        $Organization,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
@@ -35,7 +36,7 @@
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Organization
+        $AgentCloudId
     )
     process {
         $__mapping = @{
@@ -44,7 +45,8 @@
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ApiVersion') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__path = 'https://dev.azure.com/{organization}/_apis/distributedtask/agentclouds/{agentCloudId}' -Replace '{agentCloudId}',$AgentCloudId -Replace '{organization}',$Organization
+        $__path = 'https://dev.azure.com/{organization}/_apis/distributedtask/agentclouds/{agentCloudId}' -Replace '{organization}',$Organization -Replace '{agentCloudId}',$AgentCloudId
+
         Invoke-RestRequest -Path $__path -Method delete -Body $__body -Query $__query -Header $__header
     }
 }

@@ -6,23 +6,23 @@
 .DESCRIPTION
     Get team's days off for an iteration
 
-.PARAMETER ApiVersion
-    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
-
-.PARAMETER IterationId
-    ID of the iteration
-
 .PARAMETER Organization
     The name of the Azure DevOps organization.
 
 .PARAMETER Team
     Team ID or team name
 
+.PARAMETER ApiVersion
+    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
+
 .PARAMETER Project
     Project ID or project name
 
+.PARAMETER IterationId
+    ID of the iteration
+
 .EXAMPLE
-    PS C:\> Get-AdsWorkTeamsettingIterationTeamdaysoff -ApiVersion $apiversion -IterationId $iterationid -Organization $organization -Team $team -Project $project
+    PS C:\> Get-AdsWorkTeamsettingIterationTeamdaysoff -Organization $organization -Team $team -ApiVersion $apiversion -Project $project -IterationId $iterationid
 
     Get team's days off for an iteration
 
@@ -33,14 +33,6 @@
     param (
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $ApiVersion,
-
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [string]
-        $IterationId,
-
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [string]
         $Organization,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
@@ -49,7 +41,15 @@
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Project
+        $ApiVersion,
+
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [string]
+        $Project,
+
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [string]
+        $IterationId
     )
     process {
         $__mapping = @{
@@ -58,7 +58,8 @@
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ApiVersion') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__path = 'https://dev.azure.com/{organization}/{project}/{team}/_apis/work/teamsettings/iterations/{iterationId}/teamdaysoff' -Replace '{iterationId}',$IterationId -Replace '{organization}',$Organization -Replace '{team}',$Team -Replace '{project}',$Project
+        $__path = 'https://dev.azure.com/{organization}/{project}/{team}/_apis/work/teamsettings/iterations/{iterationId}/teamdaysoff' -Replace '{organization}',$Organization -Replace '{team}',$Team -Replace '{project}',$Project -Replace '{iterationId}',$IterationId
+
         Invoke-RestRequest -Path $__path -Method get -Body $__body -Query $__query -Header $__header
     }
 }

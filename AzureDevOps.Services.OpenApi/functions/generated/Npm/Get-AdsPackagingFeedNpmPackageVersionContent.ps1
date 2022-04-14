@@ -4,42 +4,47 @@
     
 
 .DESCRIPTION
-    Get an unscoped npm package.
+    
 
-The project parameter must be supplied if the feed was created in a project.
-If the feed is not associated with any project, omit the project parameter from the request.
-
-.PARAMETER FeedId
-    Name or ID of the feed.
-
-.PARAMETER PackageVersion
-    Version of the package.
-
-.PARAMETER PackageName
-    Name of the package.
-
-.PARAMETER ApiVersion
-    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
+.PARAMETER UnscopedPackageName
+    
 
 .PARAMETER Project
     Project ID or project name
 
+.PARAMETER FeedId
+    
+
+.PARAMETER PackageVersion
+    
+
+.PARAMETER ApiVersion
+    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
+
 .PARAMETER Organization
     The name of the Azure DevOps organization.
 
+.PARAMETER PackageScope
+    
+
 .EXAMPLE
-    PS C:\> Get-AdsPackagingFeedNpmPackageVersionContent -FeedId $feedid -PackageVersion $packageversion -PackageName $packagename -ApiVersion $apiversion -Project $project -Organization $organization
+    PS C:\> Get-AdsPackagingFeedNpmPackageVersionContent -UnscopedPackageName $unscopedpackagename -Project $project -FeedId $feedid -PackageVersion $packageversion -ApiVersion $apiversion -Organization $organization -PackageScope $packagescope
 
-    Get an unscoped npm package.
-
-The project parameter must be supplied if the feed was created in a project.
-If the feed is not associated with any project, omit the project parameter from the request.
+    <insert description here>
 
 .LINK
     <unknown>
 #>
     [CmdletBinding(DefaultParameterSetName = 'default')]
     param (
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [string]
+        $UnscopedPackageName,
+
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [string]
+        $Project,
+
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
         $FeedId,
@@ -50,19 +55,15 @@ If the feed is not associated with any project, omit the project parameter from 
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $PackageName,
-
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [string]
         $ApiVersion,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Project,
+        $Organization,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Organization
+        $PackageScope
     )
     process {
         $__mapping = @{
@@ -71,7 +72,8 @@ If the feed is not associated with any project, omit the project parameter from 
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ApiVersion') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__path = 'https://pkgs.dev.azure.com/{organization}/{project}/_apis/packaging/feeds/{feedId}/npm/packages/{packageName}/versions/{packageVersion}/content' -Replace '{feedId}',$FeedId -Replace '{packageVersion}',$PackageVersion -Replace '{packageName}',$PackageName -Replace '{project}',$Project -Replace '{organization}',$Organization
+        $__path = 'https://pkgs.dev.azure.com/{organization}/{project}/_apis/packaging/feeds/{feedId}/npm/packages/@{packageScope}/{unscopedPackageName}/versions/{packageVersion}/content' -Replace '{unscopedPackageName}',$UnscopedPackageName -Replace '{project}',$Project -Replace '{feedId}',$FeedId -Replace '{packageVersion}',$PackageVersion -Replace '{organization}',$Organization -Replace '{packageScope}',$PackageScope
+
         Invoke-RestRequest -Path $__path -Method get -Body $__body -Query $__query -Header $__header
     }
 }

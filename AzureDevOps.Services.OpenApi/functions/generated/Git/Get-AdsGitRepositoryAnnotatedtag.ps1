@@ -10,23 +10,23 @@ Repositories have both a name and an identifier. Identifiers are globally unique
 may contain a repository of the same name. You don't need to include the project if you specify a
 repository by ID. However, if you specify a repository by name, you must also specify the project (by name or ID).
 
-.PARAMETER ApiVersion
-    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
-
-.PARAMETER RepositoryId
-    ID or name of the repository.
+.PARAMETER Organization
+    The name of the Azure DevOps organization.
 
 .PARAMETER ObjectId
     ObjectId (Sha1Id) of tag to get.
 
-.PARAMETER Organization
-    The name of the Azure DevOps organization.
+.PARAMETER RepositoryId
+    ID or name of the repository.
 
 .PARAMETER Project
     Project ID or project name
 
+.PARAMETER ApiVersion
+    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
+
 .EXAMPLE
-    PS C:\> Get-AdsGitRepositoryAnnotatedtag -ApiVersion $apiversion -RepositoryId $repositoryid -ObjectId $objectid -Organization $organization -Project $project
+    PS C:\> Get-AdsGitRepositoryAnnotatedtag -Organization $organization -ObjectId $objectid -RepositoryId $repositoryid -Project $project -ApiVersion $apiversion
 
     Get an annotated tag.
 
@@ -41,11 +41,7 @@ repository by ID. However, if you specify a repository by name, you must also sp
     param (
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $ApiVersion,
-
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [string]
-        $RepositoryId,
+        $Organization,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
@@ -53,11 +49,15 @@ repository by ID. However, if you specify a repository by name, you must also sp
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Organization,
+        $RepositoryId,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Project
+        $Project,
+
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [string]
+        $ApiVersion
     )
     process {
         $__mapping = @{
@@ -66,7 +66,8 @@ repository by ID. However, if you specify a repository by name, you must also sp
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ApiVersion') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__path = 'https://dev.azure.com/{organization}/{project}/_apis/git/repositories/{repositoryId}/annotatedtags/{objectId}' -Replace '{repositoryId}',$RepositoryId -Replace '{objectId}',$ObjectId -Replace '{organization}',$Organization -Replace '{project}',$Project
+        $__path = 'https://dev.azure.com/{organization}/{project}/_apis/git/repositories/{repositoryId}/annotatedtags/{objectId}' -Replace '{organization}',$Organization -Replace '{objectId}',$ObjectId -Replace '{repositoryId}',$RepositoryId -Replace '{project}',$Project
+
         Invoke-RestRequest -Path $__path -Method get -Body $__body -Query $__query -Header $__header
     }
 }

@@ -6,9 +6,6 @@
 .DESCRIPTION
     Lock or Unlock a branch.
 
-.PARAMETER ApiVersion
-    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
-
 .PARAMETER ProjectId
     ID or name of the team project. Optional if specifying an ID for repository.
 
@@ -18,26 +15,26 @@
 .PARAMETER Project
     Project ID or project name
 
-.PARAMETER RepositoryId
-    The name or ID of the repository.
-
 .PARAMETER Organization
     The name of the Azure DevOps organization.
 
+.PARAMETER RepositoryId
+    The name or ID of the repository.
+
+.PARAMETER ApiVersion
+    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
+
 .EXAMPLE
-    PS C:\> Set-AdsGitRepositoryRef -ApiVersion $apiversion -Filter $filter -Project $project -RepositoryId $repositoryid -Organization $organization
+    PS C:\> Set-AdsGitRepositoryRef -Filter $filter -Project $project -Organization $organization -RepositoryId $repositoryid -ApiVersion $apiversion
 
     Lock or Unlock a branch.
 
 .LINK
     <unknown>
 #>
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     [CmdletBinding(DefaultParameterSetName = 'default')]
     param (
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [string]
-        $ApiVersion,
-
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
         $ProjectId,
@@ -52,22 +49,27 @@
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
+        $Organization,
+
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [string]
         $RepositoryId,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Organization
+        $ApiVersion
     )
     process {
         $__mapping = @{
-            'ApiVersion' = 'api-version'
             'ProjectId' = 'projectId'
             'Filter' = 'filter'
+            'ApiVersion' = 'api-version'
         }
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ApiVersion','ProjectId','Filter') -Mapping $__mapping
+        $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ProjectId','Filter','ApiVersion') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__path = 'https://dev.azure.com/{organization}/{project}/_apis/git/repositories/{repositoryId}/refs' -Replace '{project}',$Project -Replace '{repositoryId}',$RepositoryId -Replace '{organization}',$Organization
+        $__path = 'https://dev.azure.com/{organization}/{project}/_apis/git/repositories/{repositoryId}/refs' -Replace '{project}',$Project -Replace '{organization}',$Organization -Replace '{repositoryId}',$RepositoryId
+
         Invoke-RestRequest -Path $__path -Method patch -Body $__body -Query $__query -Header $__header
     }
 }

@@ -16,25 +16,25 @@ Since the list of users may be large, results are returned in pages of users.  I
 .PARAMETER UserDescriptor
     The descriptor of the desired user.
 
-.PARAMETER ScopeDescriptor
-    Specify a non-default scope (collection, project) to search for users.
-
-.PARAMETER ApiVersion
-    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
-
 .PARAMETER SubjectTypes
     A comma separated list of user subject subtypes to reduce the retrieved results, e.g. msa’, ‘aad’, ‘svc’ (service identity), ‘imp’ (imported identity), etc.
 
 .PARAMETER Organization
     The name of the Azure DevOps organization.
 
+.PARAMETER ScopeDescriptor
+    Specify a non-default scope (collection, project) to search for users.
+
+.PARAMETER ApiVersion
+    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
+
 .EXAMPLE
-    PS C:\> Get-AdsGraphUser -UserDescriptor $userdescriptor -ApiVersion $apiversion -Organization $organization
+    PS C:\> Get-AdsGraphUser -UserDescriptor $userdescriptor -Organization $organization -ApiVersion $apiversion
 
     Get a user by its descriptor.
 
 .EXAMPLE
-    PS C:\> Get-AdsGraphUser -ApiVersion $apiversion -Organization $organization
+    PS C:\> Get-AdsGraphUser -Organization $organization -ApiVersion $apiversion
 
     Get a list of all users in a given scope.
 
@@ -57,34 +57,35 @@ Since the list of users may be large, results are returned in pages of users.  I
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $ScopeDescriptor,
-
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Users_Get')]
-        [string]
-        $ApiVersion,
-
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [string]
         $SubjectTypes,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Users_Get')]
         [string]
-        $Organization
+        $Organization,
+
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [string]
+        $ScopeDescriptor,
+
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Users_Get')]
+        [string]
+        $ApiVersion
     )
     process {
         $__mapping = @{
             'ContinuationToken' = 'continuationToken'
+            'SubjectTypes' = 'subjectTypes'
             'ScopeDescriptor' = 'scopeDescriptor'
             'ApiVersion' = 'api-version'
-            'SubjectTypes' = 'subjectTypes'
         }
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ContinuationToken','ScopeDescriptor','ApiVersion','SubjectTypes') -Mapping $__mapping
+        $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ContinuationToken','SubjectTypes','ScopeDescriptor','ApiVersion') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__path = 'https://vssps.dev.azure.com/{organization}/_apis/graph/users' -Replace '{organization}',$Organization
         if ($UserDescriptor) { $__path += "/$UserDescriptor" }
+
         Invoke-RestRequest -Path $__path -Method get -Body $__body -Query $__query -Header $__header
     }
 }

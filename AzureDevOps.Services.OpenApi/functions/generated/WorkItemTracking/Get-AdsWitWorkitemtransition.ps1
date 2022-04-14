@@ -6,20 +6,20 @@
 .DESCRIPTION
     Returns the next state on the given work item IDs.
 
-.PARAMETER Ids
-    list of work item ids
+.PARAMETER Organization
+    The name of the Azure DevOps organization.
 
 .PARAMETER ApiVersion
     Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
 
-.PARAMETER Organization
-    The name of the Azure DevOps organization.
+.PARAMETER Ids
+    list of work item ids
 
 .PARAMETER Action
     possible actions. Currently only supports checkin
 
 .EXAMPLE
-    PS C:\> Get-AdsWitWorkitemtransition -Ids $ids -ApiVersion $apiversion -Organization $organization
+    PS C:\> Get-AdsWitWorkitemtransition -Organization $organization -ApiVersion $apiversion -Ids $ids
 
     Returns the next state on the given work item IDs.
 
@@ -30,7 +30,7 @@
     param (
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Ids,
+        $Organization,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
@@ -38,7 +38,7 @@
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Organization,
+        $Ids,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
@@ -46,14 +46,15 @@
     )
     process {
         $__mapping = @{
-            'Ids' = 'ids'
             'ApiVersion' = 'api-version'
+            'Ids' = 'ids'
             'Action' = 'action'
         }
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('Ids','ApiVersion','Action') -Mapping $__mapping
+        $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ApiVersion','Ids','Action') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__path = 'https://dev.azure.com/{organization}/_apis/wit/workitemtransitions' -Replace '{organization}',$Organization
+
         Invoke-RestRequest -Path $__path -Method get -Body $__body -Query $__query -Header $__header
     }
 }

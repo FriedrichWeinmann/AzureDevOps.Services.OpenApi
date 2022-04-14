@@ -20,6 +20,7 @@
 .LINK
     <unknown>
 #>
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     [CmdletBinding(DefaultParameterSetName = 'default')]
     param (
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
@@ -38,6 +39,7 @@
         $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ApiVersion') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__path = 'https://vsclt.dev.azure.com/{organization}/_apis/clt/testdrops' -Replace '{organization}',$Organization
+
         Invoke-RestRequest -Path $__path -Method post -Body $__body -Query $__query -Header $__header
     }
 }

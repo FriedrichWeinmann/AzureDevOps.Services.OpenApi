@@ -6,8 +6,8 @@
 .DESCRIPTION
     Replaces a behavior in the process.
 
-.PARAMETER ApiVersion
-    Version of the API to use.  This should be set to '4.1-preview.1' to use this version of the api.
+.PARAMETER Organization
+    The name of the Azure DevOps organization.
 
 .PARAMETER ProcessId
     The ID of the process
@@ -15,22 +15,23 @@
 .PARAMETER BehaviorId
     The ID of the behavior
 
-.PARAMETER Organization
-    The name of the Azure DevOps organization.
+.PARAMETER ApiVersion
+    Version of the API to use.  This should be set to '4.1-preview.1' to use this version of the api.
 
 .EXAMPLE
-    PS C:\> New-AdsWorkProcessdefinitionBehavior -ApiVersion $apiversion -ProcessId $processid -BehaviorId $behaviorid -Organization $organization
+    PS C:\> New-AdsWorkProcessdefinitionBehavior -Organization $organization -ProcessId $processid -BehaviorId $behaviorid -ApiVersion $apiversion
 
     Replaces a behavior in the process.
 
 .LINK
     <unknown>
 #>
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     [CmdletBinding(DefaultParameterSetName = 'default')]
     param (
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $ApiVersion,
+        $Organization,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
@@ -42,7 +43,7 @@
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Organization
+        $ApiVersion
     )
     process {
         $__mapping = @{
@@ -51,7 +52,8 @@
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ApiVersion') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__path = 'https://dev.azure.com/{organization}/_apis/work/processdefinitions/{processId}/behaviors/{behaviorId}' -Replace '{processId}',$ProcessId -Replace '{behaviorId}',$BehaviorId -Replace '{organization}',$Organization
+        $__path = 'https://dev.azure.com/{organization}/_apis/work/processdefinitions/{processId}/behaviors/{behaviorId}' -Replace '{organization}',$Organization -Replace '{processId}',$ProcessId -Replace '{behaviorId}',$BehaviorId
+
         Invoke-RestRequest -Path $__path -Method put -Body $__body -Query $__query -Header $__header
     }
 }

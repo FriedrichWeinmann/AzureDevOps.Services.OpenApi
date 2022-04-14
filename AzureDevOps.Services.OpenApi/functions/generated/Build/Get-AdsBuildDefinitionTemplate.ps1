@@ -6,25 +6,25 @@
 .DESCRIPTION
     Gets all definition templates.
 
-.PARAMETER ApiVersion
-    Version of the API to use.  This should be set to '7.1-preview.3' to use this version of the api.
+.PARAMETER Organization
+    The name of the Azure DevOps organization.
 
 .PARAMETER TemplateId
     The ID of the requested template.
 
-.PARAMETER Organization
-    The name of the Azure DevOps organization.
-
 .PARAMETER Project
     Project ID or project name
 
+.PARAMETER ApiVersion
+    Version of the API to use.  This should be set to '7.1-preview.3' to use this version of the api.
+
 .EXAMPLE
-    PS C:\> Get-AdsBuildDefinitionTemplate -ApiVersion $apiversion -TemplateId $templateid -Organization $organization -Project $project
+    PS C:\> Get-AdsBuildDefinitionTemplate -Organization $organization -TemplateId $templateid -Project $project -ApiVersion $apiversion
 
     Gets a specific build definition template.
 
 .EXAMPLE
-    PS C:\> Get-AdsBuildDefinitionTemplate -ApiVersion $apiversion -Organization $organization -Project $project
+    PS C:\> Get-AdsBuildDefinitionTemplate -Organization $organization -Project $project -ApiVersion $apiversion
 
     Gets all definition templates.
 
@@ -36,7 +36,7 @@
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Templates_Get')]
         [string]
-        $ApiVersion,
+        $Organization,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Templates_Get')]
         [string]
@@ -45,12 +45,12 @@
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Templates_Get')]
         [string]
-        $Organization,
+        $Project,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Templates_Get')]
         [string]
-        $Project
+        $ApiVersion
     )
     process {
         $__mapping = @{
@@ -61,6 +61,7 @@
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__path = 'https://dev.azure.com/{organization}/{project}/_apis/build/definitions/templates' -Replace '{organization}',$Organization -Replace '{project}',$Project
         if ($TemplateId) { $__path += "/$TemplateId" }
+
         Invoke-RestRequest -Path $__path -Method get -Body $__body -Query $__query -Header $__header
     }
 }

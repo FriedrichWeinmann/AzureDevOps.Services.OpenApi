@@ -47,6 +47,9 @@ Param (
 if ($SkipTest) { return }
 . $ExceptionsFile
 
+# Swagger Document doesn't provide all the data needed
+return
+
 $includedNames = (Get-ChildItem $CommandPath -Recurse -File | Where-Object Name -like "*.ps1").BaseName
 $commandTypes = @('Cmdlet', 'Function')
 if ($PSVersionTable.PSEdition -eq 'Desktop' ) { $commandTypes += 'Workflow' }

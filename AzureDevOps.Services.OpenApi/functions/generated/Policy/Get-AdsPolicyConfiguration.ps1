@@ -18,14 +18,11 @@ The optional `policyType` parameter can be used to filter the set of policies re
 .PARAMETER ConfigurationId
     ID of the policy configuration
 
-.PARAMETER Scope
-    [Provided for legacy reasons] The scope on which a subset of policies is defined.
-
 .PARAMETER PolicyType
     Filter returned policies to only this type
 
-.PARAMETER ApiVersion
-    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
+.PARAMETER Scope
+    [Provided for legacy reasons] The scope on which a subset of policies is defined.
 
 .PARAMETER Top
     Maximum number of policies to return.
@@ -36,8 +33,16 @@ The optional `policyType` parameter can be used to filter the set of policies re
 .PARAMETER Organization
     The name of the Azure DevOps organization.
 
+.PARAMETER ApiVersion
+    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
+
 .EXAMPLE
-    PS C:\> Get-AdsPolicyConfiguration -ApiVersion $apiversion -Project $project -Organization $organization
+    PS C:\> Get-AdsPolicyConfiguration -ConfigurationId $configurationid -Project $project -Organization $organization -ApiVersion $apiversion
+
+    Get a policy configuration by its ID.
+
+.EXAMPLE
+    PS C:\> Get-AdsPolicyConfiguration -Project $project -Organization $organization -ApiVersion $apiversion
 
     Get a list of policy configurations in a project.
 
@@ -46,11 +51,6 @@ scoped policies and does not support heirarchical nesting. Instead, use the /_ap
 first class scope filtering support.
 
 The optional `policyType` parameter can be used to filter the set of policies returned from this method.
-
-.EXAMPLE
-    PS C:\> Get-AdsPolicyConfiguration -ConfigurationId $configurationid -ApiVersion $apiversion -Project $project -Organization $organization
-
-    Get a policy configuration by its ID.
 
 .LINK
     <unknown>
@@ -67,16 +67,11 @@ The optional `policyType` parameter can be used to filter the set of policies re
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Scope,
+        $PolicyType,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $PolicyType,
-
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Configurations_Get')]
-        [string]
-        $ApiVersion,
+        $Scope,
 
         [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [int32]
@@ -90,21 +85,27 @@ The optional `policyType` parameter can be used to filter the set of policies re
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Configurations_Get')]
         [string]
-        $Organization
+        $Organization,
+
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Configurations_Get')]
+        [string]
+        $ApiVersion
     )
     process {
         $__mapping = @{
             'ContinuationToken' = 'continuationToken'
-            'Scope' = 'scope'
             'PolicyType' = 'policyType'
-            'ApiVersion' = 'api-version'
+            'Scope' = 'scope'
             'Top' = '$top'
+            'ApiVersion' = 'api-version'
         }
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ContinuationToken','Scope','PolicyType','ApiVersion','Top') -Mapping $__mapping
+        $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ContinuationToken','PolicyType','Scope','Top','ApiVersion') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__path = 'https://dev.azure.com/{organization}/{project}/_apis/policy/configurations' -Replace '{project}',$Project -Replace '{organization}',$Organization
         if ($ConfigurationId) { $__path += "/$ConfigurationId" }
+
         Invoke-RestRequest -Path $__path -Method get -Body $__body -Query $__query -Header $__header
     }
 }

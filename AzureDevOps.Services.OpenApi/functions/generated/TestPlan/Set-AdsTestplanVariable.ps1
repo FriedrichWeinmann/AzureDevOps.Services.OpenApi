@@ -4,13 +4,7 @@
     
 
 .DESCRIPTION
-    Update a test variable by its ID.
-
-.PARAMETER ApiVersion
-    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
-
-.PARAMETER TestVariableId
-    ID of the test variable to update.
+    Create a test variable.
 
 .PARAMETER Organization
     The name of the Azure DevOps organization.
@@ -18,31 +12,31 @@
 .PARAMETER Project
     Project ID or project name
 
-.EXAMPLE
-    PS C:\> Set-AdsTestplanVariable -ApiVersion $apiversion -TestVariableId $testvariableid -Organization $organization -Project $project
+.PARAMETER ApiVersion
+    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
 
-    Update a test variable by its ID.
+.EXAMPLE
+    PS C:\> Set-AdsTestplanVariable -Organization $organization -Project $project -ApiVersion $apiversion
+
+    Create a test variable.
 
 .LINK
     <unknown>
 #>
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     [CmdletBinding(DefaultParameterSetName = 'default')]
     param (
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [string]
-        $ApiVersion,
-
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
-        [string]
-        $TestVariableId,
-
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
         $Organization,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Project
+        $Project,
+
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [string]
+        $ApiVersion
     )
     process {
         $__mapping = @{
@@ -51,7 +45,8 @@
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ApiVersion') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__path = 'https://dev.azure.com/{organization}/{project}/_apis/testplan/variables/{testVariableId}' -Replace '{testVariableId}',$TestVariableId -Replace '{organization}',$Organization -Replace '{project}',$Project
-        Invoke-RestRequest -Path $__path -Method patch -Body $__body -Query $__query -Header $__header
+        $__path = 'https://dev.azure.com/{organization}/{project}/_apis/testplan/variables' -Replace '{organization}',$Organization -Replace '{project}',$Project
+
+        Invoke-RestRequest -Path $__path -Method post -Body $__body -Query $__query -Header $__header
     }
 }

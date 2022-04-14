@@ -6,27 +6,27 @@
 .DESCRIPTION
     Retrieve all available policy types.
 
-.PARAMETER ApiVersion
-    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
+.PARAMETER Organization
+    The name of the Azure DevOps organization.
 
 .PARAMETER TypeId
     The policy ID.
 
-.PARAMETER Organization
-    The name of the Azure DevOps organization.
-
 .PARAMETER Project
     Project ID or project name
 
-.EXAMPLE
-    PS C:\> Get-AdsPolicyType -ApiVersion $apiversion -Organization $organization -Project $project
-
-    Retrieve all available policy types.
+.PARAMETER ApiVersion
+    Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
 
 .EXAMPLE
-    PS C:\> Get-AdsPolicyType -ApiVersion $apiversion -TypeId $typeid -Organization $organization -Project $project
+    PS C:\> Get-AdsPolicyType -Organization $organization -TypeId $typeid -Project $project -ApiVersion $apiversion
 
     Retrieve a specific policy type by ID.
+
+.EXAMPLE
+    PS C:\> Get-AdsPolicyType -Organization $organization -Project $project -ApiVersion $apiversion
+
+    Retrieve all available policy types.
 
 .LINK
     <unknown>
@@ -36,7 +36,7 @@
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Types_Get')]
         [string]
-        $ApiVersion,
+        $Organization,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Types_Get')]
         [string]
@@ -45,12 +45,12 @@
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Types_Get')]
         [string]
-        $Organization,
+        $Project,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'Types_Get')]
         [string]
-        $Project
+        $ApiVersion
     )
     process {
         $__mapping = @{
@@ -61,6 +61,7 @@
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__path = 'https://dev.azure.com/{organization}/{project}/_apis/policy/types' -Replace '{organization}',$Organization -Replace '{project}',$Project
         if ($TypeId) { $__path += "/$TypeId" }
+
         Invoke-RestRequest -Path $__path -Method get -Body $__body -Query $__query -Header $__header
     }
 }

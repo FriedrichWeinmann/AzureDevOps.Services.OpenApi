@@ -6,20 +6,20 @@
 .DESCRIPTION
     Get a collection of team project properties.
 
+.PARAMETER Organization
+    The name of the Azure DevOps organization.
+
 .PARAMETER ApiVersion
     Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
-
-.PARAMETER Keys
-    A comma-delimited string of team project property names. Wildcard characters ("?" and "*") are supported. If no key is specified, all properties will be returned.
 
 .PARAMETER ProjectId
     The team project ID.
 
-.PARAMETER Organization
-    The name of the Azure DevOps organization.
+.PARAMETER Keys
+    A comma-delimited string of team project property names. Wildcard characters ("?" and "*") are supported. If no key is specified, all properties will be returned.
 
 .EXAMPLE
-    PS C:\> Get-AdsProjectPropertie -ApiVersion $apiversion -ProjectId $projectid -Organization $organization
+    PS C:\> Get-AdsProjectPropertie -Organization $organization -ApiVersion $apiversion -ProjectId $projectid
 
     Get a collection of team project properties.
 
@@ -30,19 +30,19 @@
     param (
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $ApiVersion,
+        $Organization,
 
-        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Keys,
+        $ApiVersion,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
         $ProjectId,
 
-        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Organization
+        $Keys
     )
     process {
         $__mapping = @{
@@ -52,7 +52,8 @@
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ApiVersion','Keys') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__path = 'https://dev.azure.com/{organization}/_apis/projects/{projectId}/properties' -Replace '{projectId}',$ProjectId -Replace '{organization}',$Organization
+        $__path = 'https://dev.azure.com/{organization}/_apis/projects/{projectId}/properties' -Replace '{organization}',$Organization -Replace '{projectId}',$ProjectId
+
         Invoke-RestRequest -Path $__path -Method get -Body $__body -Query $__query -Header $__header
     }
 }

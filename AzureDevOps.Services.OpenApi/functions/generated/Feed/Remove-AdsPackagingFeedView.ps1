@@ -8,23 +8,23 @@
 
 The project parameter must be supplied if the feed was created in a project.
 
+.PARAMETER Organization
+    The name of the Azure DevOps organization.
+
 .PARAMETER ApiVersion
     Version of the API to use.  This should be set to '7.1-preview.1' to use this version of the api.
-
-.PARAMETER ViewId
-    Name or Id of the view.
 
 .PARAMETER FeedId
     Name or Id of the feed.
 
-.PARAMETER Organization
-    The name of the Azure DevOps organization.
-
 .PARAMETER Project
     Project ID or project name
 
+.PARAMETER ViewId
+    Name or Id of the view.
+
 .EXAMPLE
-    PS C:\> Remove-AdsPackagingFeedView -ApiVersion $apiversion -ViewId $viewid -FeedId $feedid -Organization $organization -Project $project
+    PS C:\> Remove-AdsPackagingFeedView -Organization $organization -ApiVersion $apiversion -FeedId $feedid -Project $project -ViewId $viewid
 
     Delete a feed view.
 
@@ -33,15 +33,16 @@ The project parameter must be supplied if the feed was created in a project.
 .LINK
     <unknown>
 #>
+	[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '')]
     [CmdletBinding(DefaultParameterSetName = 'default')]
     param (
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $ApiVersion,
+        $Organization,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $ViewId,
+        $ApiVersion,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
@@ -49,11 +50,11 @@ The project parameter must be supplied if the feed was created in a project.
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Organization,
+        $Project,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Project
+        $ViewId
     )
     process {
         $__mapping = @{
@@ -62,7 +63,8 @@ The project parameter must be supplied if the feed was created in a project.
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ApiVersion') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__path = 'https://feeds.dev.azure.com/{organization}/{project}/_apis/packaging/Feeds/{feedId}/views/{viewId}' -Replace '{viewId}',$ViewId -Replace '{feedId}',$FeedId -Replace '{organization}',$Organization -Replace '{project}',$Project
+        $__path = 'https://feeds.dev.azure.com/{organization}/{project}/_apis/packaging/Feeds/{feedId}/views/{viewId}' -Replace '{organization}',$Organization -Replace '{feedId}',$FeedId -Replace '{project}',$Project -Replace '{viewId}',$ViewId
+
         Invoke-RestRequest -Path $__path -Method delete -Body $__body -Query $__query -Header $__header
     }
 }

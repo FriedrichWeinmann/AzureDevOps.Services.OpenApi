@@ -4,27 +4,36 @@
     
 
 .DESCRIPTION
-    Gets the list of attachments of a specific type that are associated with a build.
+    Gets a specific attachment.
 
 .PARAMETER Type
-    The type of attachment.
+    The type of the attachment.
 
-.PARAMETER BuildId
-    The ID of the build.
+.PARAMETER RecordId
+    The ID of the timeline record.
 
-.PARAMETER ApiVersion
-    Version of the API to use.  This should be set to '7.1-preview.2' to use this version of the api.
+.PARAMETER TimelineId
+    The ID of the timeline.
 
-.PARAMETER Organization
-    The name of the Azure DevOps organization.
+.PARAMETER Name
+    The name of the attachment.
 
 .PARAMETER Project
     Project ID or project name
 
-.EXAMPLE
-    PS C:\> Get-AdsBuildBuildAttachment -Type $type -BuildId $buildid -ApiVersion $apiversion -Organization $organization -Project $project
+.PARAMETER BuildId
+    The ID of the build.
 
-    Gets the list of attachments of a specific type that are associated with a build.
+.PARAMETER Organization
+    The name of the Azure DevOps organization.
+
+.PARAMETER ApiVersion
+    Version of the API to use.  This should be set to '7.1-preview.2' to use this version of the api.
+
+.EXAMPLE
+    PS C:\> Get-AdsBuildBuildAttachment -Type $type -RecordId $recordid -TimelineId $timelineid -Name $name -Project $project -BuildId $buildid -Organization $organization -ApiVersion $apiversion
+
+    Gets a specific attachment.
 
 .LINK
     <unknown>
@@ -37,11 +46,23 @@
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $BuildId,
+        $RecordId,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $ApiVersion,
+        $TimelineId,
+
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [string]
+        $Name,
+
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [string]
+        $Project,
+
+        [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
+        [string]
+        $BuildId,
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
@@ -49,7 +70,7 @@
 
         [Parameter(Mandatory = $true, ValueFromPipelineByPropertyName = $true, ParameterSetName = 'default')]
         [string]
-        $Project
+        $ApiVersion
     )
     process {
         $__mapping = @{
@@ -58,7 +79,8 @@
         $__body = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
         $__query = $PSBoundParameters | ConvertTo-Hashtable -Include @('ApiVersion') -Mapping $__mapping
         $__header = $PSBoundParameters | ConvertTo-Hashtable -Include @() -Mapping $__mapping
-        $__path = 'https://dev.azure.com/{organization}/{project}/_apis/build/builds/{buildId}/attachments/{type}' -Replace '{type}',$Type -Replace '{buildId}',$BuildId -Replace '{organization}',$Organization -Replace '{project}',$Project
+        $__path = 'https://dev.azure.com/{organization}/{project}/_apis/build/builds/{buildId}/{timelineId}/{recordId}/attachments/{type}/{name}' -Replace '{type}',$Type -Replace '{recordId}',$RecordId -Replace '{timelineId}',$TimelineId -Replace '{name}',$Name -Replace '{project}',$Project -Replace '{buildId}',$BuildId -Replace '{organization}',$Organization
+
         Invoke-RestRequest -Path $__path -Method get -Body $__body -Query $__query -Header $__header
     }
 }
