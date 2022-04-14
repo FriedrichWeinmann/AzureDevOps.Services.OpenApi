@@ -5,6 +5,12 @@ This module is mostly auto-generated using AutoRest, which allowed mapping the e
 
 > Some very few API endpoints are still missing and some few are only partially available, as this is a work in progress.
 
+## Installing
+
+```powershell
+Install-Module AzureDevOps.Services.OpenApi -Scope CurrentUser
+```
+
 ## Connecting
 
 To establish a connection use `Connect-AdsService`:
@@ -16,12 +22,6 @@ Connect-AdsService -Credential $cred
 Where `$cred` contains a credential object with the user's UPN / mail and a Personal Access Token (PAT) as Password.
 
 > Theoretically, Azure AD authentication should work, using the ClientID and TenantID parameters instead, but there's some backend trouble which I'm still investigating.
-
-## Installing
-
-```powershell
-Install-Module AzureDevOps.Services.OpenApi -Scope CurrentUser
-```
 
 ## Using
 
