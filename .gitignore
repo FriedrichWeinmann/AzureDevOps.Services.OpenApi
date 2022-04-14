@@ -1,0 +1,22 @@
+﻿
+# ignore the settings folder and files for VSCode and PSS
+.vscode/*
+*.psproj
+*TempPoint*
+
+# Ignore staging info from Visual Studio
+library/AzureDevOps.Services.OpenApi/.vs/*
+library/AzureDevOps.Services.OpenApi/AzureDevOps.Services.OpenApi/bin/*
+library/AzureDevOps.Services.OpenApi/AzureDevOps.Services.OpenApi/obj/*
+
+# ignore PowerShell Studio MetaData
+AzureDevOps.Services.OpenApi/AzureDevOps.Services.OpenApi.psproj
+AzureDevOps.Services.OpenApi/AzureDevOps.Services.OpenApi.psproj.bak
+AzureDevOps.Services.OpenApi/AzureDevOps.Services.OpenApi.psprojs
+AzureDevOps.Services.OpenApi/AzureDevOps.Services.OpenApi.psproj
+
+# ignore the TestResults
+TestResults/*
+
+# ignore the publishing Directory
+publish/*

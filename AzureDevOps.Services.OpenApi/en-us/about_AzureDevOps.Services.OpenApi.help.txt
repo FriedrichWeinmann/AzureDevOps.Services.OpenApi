@@ -1,0 +1,11 @@
+﻿TOPIC
+	about_AzureDevOps.Services.OpenApi
+	
+SHORT DESCRIPTION
+	Explains how to use the AzureDevOps.Services.OpenApi powershell module
+	
+LONG DESCRIPTION
+	<Insert Content here>
+
+KEYWORDS
+	AzureDevOps.Services.OpenApi
