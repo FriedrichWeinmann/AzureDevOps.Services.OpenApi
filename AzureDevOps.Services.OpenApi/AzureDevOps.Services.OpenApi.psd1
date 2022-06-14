@@ -7,7 +7,7 @@ All changes should be applied there
 	ModuleToProcess = 'AzureDevOps.Services.OpenApi.psm1'
 	
 	# Version number of this module.
-	ModuleVersion = '1.0.1'
+	ModuleVersion = '1.0.2'
 	
 	# ID used to uniquely identify this module
 	GUID = '45f3a577-e867-487a-a60e-21e76a556b06'
