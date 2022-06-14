@@ -34,6 +34,10 @@
 	.PARAMETER ApiVersion
 		The API version to use for this request.
 		Defaults to '6.0'
+
+	.PARAMETER EnableException
+		Replaces user friendly yellow warnings with bloody red exceptions of doom!
+		Use this if you want the function to throw terminating errors you want to catch.
 	
 	.EXAMPLE
 		PS C:\> Get-AdsRepositoryFile -Organization myOrg
@@ -72,7 +76,10 @@
 		$IncludeContent,
 
 		[string]
-		$ApiVersion = '6.0'
+		$ApiVersion = '6.0',
+
+		[switch]
+		$EnableException
 	)
 
 	begin {
@@ -82,7 +89,9 @@
 	}
 	process {
 		foreach ($orgName in $Organization) {
-			$projects = Get-AdsProject @apiParam -Organization $orgName
+			try { $projects = Get-AdsProject @apiParam -Organization $orgName -ErrorAction Stop }
+			catch { Stop-PSFFunction -Message "Failed to retrieve projects from Organization $orgName" -ErrorRecord $_ -EnableException $EnableException -Continue }
+			
 			foreach ($projectItem in $projects) {
 				if (Test-Overlap -Value $projectItem.Name -Filter $Project -Not) { continue }
 				$projectParam = $apiParam.Clone() + @{
@@ -95,13 +104,14 @@
 					# Project doesn't have any repos
 					if ($_.Exception.Response.StatusCode -eq 'NotFound') { continue }
 
-					throw
+					Stop-PSFFunction -Message "Failed to retrieve repositories from project $($projectItem.id) from Organization $orgName" -ErrorRecord $_ -EnableException $EnableException -Continue -Target $projectItem
 				}
 
 				foreach ($repositoryItem in $repositories) {
 					if (Test-Overlap -Value $repositoryItem.Name -Filter $Repository -Not) { continue }
 
-					$branches = Get-AdsGitRepositoryBranchStatistics @projectParam -RepositoryId $repositoryItem.id
+					try { $branches = Get-AdsGitRepositoryBranchStatistics @projectParam -RepositoryId $repositoryItem.id -ErrorAction Stop }
+					catch { Stop-PSFFunction -Message "Failed to retrieve branches from repository $($repositoryItem.id) of project $($projectItem.id) from Organization $orgName" -ErrorRecord $_ -EnableException $EnableException -Continue -Target $repositoryItem }
 					foreach ($branchItem in $branches) {
 						if (Test-Overlap -Value $branchItem.Name -Filter $Branch -Not) { continue }
 
