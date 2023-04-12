@@ -6,6 +6,8 @@
 		$Value,
 
 		[Parameter(Mandatory = $true)]
+		[AllowEmptyCollection()]
+		[AllowNull()]
 		[string[]]
 		$Filter,
 

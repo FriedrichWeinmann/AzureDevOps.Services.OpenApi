@@ -7,7 +7,7 @@ All changes should be applied there
 	ModuleToProcess = 'AzureDevOps.Services.OpenApi.psm1'
 	
 	# Version number of this module.
-	ModuleVersion = '1.0.3'
+	ModuleVersion = '1.0.4'
 	
 	# ID used to uniquely identify this module
 	GUID = '45f3a577-e867-487a-a60e-21e76a556b06'
@@ -45,7 +45,7 @@ All changes should be applied there
 	# TypesToProcess = @('xml\AzureDevOps.Services.OpenApi.Types.ps1xml')
 	
 	# Format files (.ps1xml) to be loaded when importing this module
-	# FormatsToProcess = @('xml\AzureDevOps.Services.OpenApi.Format.ps1xml')
+	FormatsToProcess = @('xml\AzureDevOps.Services.OpenApi.Format.ps1xml')
 	
 	# Modules to import as nested modules of the module specified in
 	# ModuleToProcess
