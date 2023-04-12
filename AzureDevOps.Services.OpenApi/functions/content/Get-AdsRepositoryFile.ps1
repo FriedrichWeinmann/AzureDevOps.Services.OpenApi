@@ -89,11 +89,13 @@
 	}
 	process {
 		foreach ($orgName in $Organization) {
+			Write-PSFMessage -Message 'Processing Organization: {0}' -StringValues $orgName
 			try { $projects = Get-AdsProject @apiParam -Organization $orgName -ErrorAction Stop }
 			catch { Stop-PSFFunction -Message "Failed to retrieve projects from Organization $orgName" -ErrorRecord $_ -EnableException $EnableException -Continue }
 			
 			foreach ($projectItem in $projects) {
 				if (Test-Overlap -Value $projectItem.Name -Filter $Project -Not) { continue }
+				Write-PSFMessage -Message '  Processing Project: {0}' -StringValues $projectItem.Name
 				$projectParam = $apiParam.Clone() + @{
 					Organization = $orgName
 					Project      = $projectItem.id
@@ -109,6 +111,7 @@
 
 				foreach ($repositoryItem in $repositories) {
 					if (Test-Overlap -Value $repositoryItem.Name -Filter $Repository -Not) { continue }
+					Write-PSFMessage -Level SomewhatVerbose -Message '    Scanning repository: {0}' -StringValues $repositoryItem.Name
 
 					try { $branches = Get-AdsGitRepositoryBranchStatistics @projectParam -RepositoryId $repositoryItem.id -ErrorAction Stop }
 					catch { Stop-PSFFunction -Message "Failed to retrieve branches from repository $($repositoryItem.id) of project $($projectItem.id) from Organization $orgName" -ErrorRecord $_ -EnableException $EnableException -Continue -Target $repositoryItem }
