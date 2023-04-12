@@ -215,6 +215,7 @@
 		}
 
 		function Select-Filter {
+			[Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSReviewUnusedParameter", "")]
 			[CmdletBinding()]
 			param (
 				[Parameter(Mandatory = $true)]
