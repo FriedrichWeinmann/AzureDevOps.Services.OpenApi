@@ -1,5 +1,9 @@
 ﻿# Changelog
 
+## 1.0.3 (2023-04-12)
+
++ Upd: Get-AdsRepositoryFile - added messages to track processing status on verbose
+
 ## 1.0.2 (2022-06-14)
 
 + Upd: Get-AdsRepositoryFile - added PSFramework flow control and opt-in exceptions
